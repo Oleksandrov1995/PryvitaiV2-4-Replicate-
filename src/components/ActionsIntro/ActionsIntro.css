@@ -1,0 +1,86 @@
+.hero {
+  background: linear-gradient(180deg, #8b3dff 0%, #25d7c7 100%);
+  color: #fff;
+  text-align: center;
+  padding: 60px 20px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-weight: bold;
+  margin-bottom: 30px;
+
+
+
+  font-size: 32px; 
+  line-height: 48px; 
+  font-weight: 800; 
+}
+
+/* Options pill group */
+.hero-options { display:inline-flex; align-items:center; background: rgba(255,255,255,0.25); padding: 6px; border-radius: 28px; gap: 8px; }
+.hero-options-image { max-width: 100%; height: auto; border-radius: 20px; }
+.option-pill { display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding: 10px 16px; font-weight:700; color:#fff; box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
+.option-pill svg { flex:0 0 auto; }
+.option-pill.yellow { background:#f6ad55; color:#2d1600; }
+.option-pill.pink { background:#f06292; }
+.option-sep { display:inline-flex; width: 16px; height: 100%; align-items:center; justify-content:center; }
+.option-sep > span { width: 16px; height: 16px; display:block; background:#f6ad55; clip-path: polygon(50% 0, 0 50%, 50% 100%); transform: rotate(90deg); opacity:.95; }
+.option-sep + .option-pill.pink ~ .option-sep > span { background:#f06292; }
+
+
+
+.hero-btn {
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.hero-btn:hover {
+  transform: scale(1.05);
+}
+
+.hero-btn.yellow {
+  background: #ffca28;
+  color: #000;
+}
+
+.hero-btn.pink {
+  background: #f06292;
+  color: #fff;
+}
+
+.hero-btn.green {
+  background: #81c784;
+  color: #fff;
+}
+
+.hero-subtext {
+  font-style: italic;
+  margin: 15px 0 30px;
+}
+
+.hero-cta {
+  background: #ffca28;
+  color: #000;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.hero-cta:hover {
+  background: #ffb300;
+  transform: scale(1.05);
+}

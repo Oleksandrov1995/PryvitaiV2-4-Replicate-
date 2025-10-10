@@ -1,0 +1,121 @@
+/* Eye icon button for password visibility */
+.eye-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.eye-btn:hover {
+  opacity: 1;
+}
+.signin-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.signin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.signin-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+.signin-form button {
+  padding: 10px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.signin-form button:hover {
+  background: #1565c0;
+}
+.error {
+  color: #d32f2f;
+  font-size: 14px;
+}
+.success {
+  color: #388e3c;
+  font-size: 14px;
+}
+
+/* Styles for SignIn are now mostly inherited from SignUp.css */
+
+.forgot-password-link{
+  text-align: right;
+  margin-top: -10px;
+  margin-bottom: 15px;
+   background: none;
+    border: none;
+    color: #8e44ad;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 0;
+    text-decoration: none;
+}
+
+.forgot-password-link {
+  margin-top: 12px;
+  text-align: right; /* вирівнювання вправо */
+}
+
+.forgot-password-button {
+  background: none;
+    border: none;
+    color: #8e44ad;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 0;
+    text-decoration: none;
+}
+
+.forgot-password-button:hover {
+ text-decoration: underline;
+}
+
+.forgot-password-button:focus {
+  outline: none;
+  text-decoration: none;
+  color: #8e44ee;
+}
+
+
+.forgot-password-info {
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.login-link button {
+    background: none;
+    border: none;
+    color: #8e44ad;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 0;
+    text-decoration: none;
+}
+
+.login-link button:hover {
+    text-decoration: underline;
+}

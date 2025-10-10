@@ -1,0 +1,23 @@
+/* Видаляємо старі стилі і замінюємо їх на нові */
+
+.btn-social {
+  display: inline-block;
+  text-decoration: none;
+  color: #8E44EE; /* Фіолетовий колір іконок */
+  background-color: transparent;
+  border: none;
+  padding: 8px; /* Невелика область для кліку навколо іконки */
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.btn-social:hover {
+  transform: scale(1.15); /* Ефект збільшення при наведенні */
+  color:white; /* Фіолетовий колір іконок */
+  background-color: #8E44EE;
+}
+
+.btn-social svg {
+  font-size: 2.5rem; /* Розмір іконки, приблизно 40px */
+  vertical-align: middle;
+}

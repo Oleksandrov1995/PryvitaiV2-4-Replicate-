@@ -1,0 +1,43 @@
+/* Контейнер .main для вертикального розташування кнопок */
+.main {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+    margin: 100px 10px 40px 10px;
+}
+.main-title{
+    font-family: 'Montserrat', sans-serif;
+    font-size: 48px;
+}
+.main-subtitle{
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    max-width: 630px;
+    text-align: center;
+}
+
+.main-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Дозволяє кнопкам переноситись на новий рядок */
+  gap: 20px; /* Відстань між кнопками */
+  margin-top: 30px;
+  max-width: 600px; /* Обмежуємо максимальну ширину, щоб помістилось не більше 2-х кнопок */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+
+@media (max-width: 768px) {
+
+
+  .main-title {
+    font-size: 32px;
+    text-align: center;
+  }
+
+  .main-subtitle {
+    font-size: 16px;
+  }
+}

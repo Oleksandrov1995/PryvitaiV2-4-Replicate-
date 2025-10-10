@@ -1,0 +1,293 @@
+import React, { useState, forwardRef, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import "./ImageGenerationSection.css";
+import { uploadPhoto } from "../../../config/uploadPhoto";
+import { generateImagePrompt } from "../../../config/generateImagePrompt";
+import { downloadImage } from "../../../utils/downloadImage";
+import { generateImageReplicate } from "../../../config/generateImageReplicate";
+
+import { StylizePhotoForPostcardApiSetting } from "../../../prompts/replicate/StylizePhotoForPostcardPrompt";
+import { createPromptFluxKontextPro } from "../../../prompts/replicate/StylizePhotoForPostcardPrompt";
+import { API_URLS } from "../../../config/api";
+
+// ДОДАЄМО сюди функцію для збереження в галерею
+async function saveImageToGallery(imageUrl) {
+  const token = localStorage.getItem("token"); // беремо токен з localStorage
+  if (!token) {
+    console.warn("❌ Немає токена. Користувач не авторизований.");
+    return;
+  }
+
+  try {
+    const response = await fetch(API_URLS.ADD_TO_GALLERY, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ imageUrl }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Не вдалося додати зображення.");
+    }
+
+    console.log("✅ Зображення додано в галерею:", data.message);
+  } catch (err) {
+    console.error("❌ Помилка при додаванні в галерею:", err);
+  }
+}
+
+const ImageGenerationSection = forwardRef(
+  (
+    {
+      onImageGenerated,
+      scrollToNextSection,
+      formData,
+      onGenerateImageRef,
+      greetingTextRef,
+      generateImageData,
+      onShowGreeting,
+    },
+    ref
+  ) => {
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generatedImageUrl, setGeneratedImageUrl] = useState("");
+    const [userCoins, setUserCoins] = useState(0); // Додаємо стан для монет користувача
+    const navigate = useNavigate();
+
+    // Завантажуємо дані користувача при ініціалізації компонента
+    useEffect(() => {
+      const fetchUserData = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        try {
+          const response = await fetch(API_URLS.GET_ME, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setUserCoins(data.user?.coins || 0);
+          }
+        } catch (error) {
+          console.error('Помилка завантаження даних користувача:', error);
+        }
+      };
+
+      fetchUserData();
+    }, []);
+
+    // Функція для переходу до редактора
+    const handleEditImage = () => {
+      if (!generatedImageUrl) return;
+
+      // If parent provided an onShowGreeting handler, call it to reveal the greeting form
+      if (typeof onShowGreeting === "function") {
+        onShowGreeting();
+        return;
+      }
+
+      // Fallback: navigate to editor with query params
+      let textToUse = "";
+      if (
+        greetingTextRef &&
+        greetingTextRef.current &&
+        greetingTextRef.current.getCurrentText
+      ) {
+        textToUse = greetingTextRef.current.getCurrentText();
+      } else {
+        textToUse = formData.greetingText || "";
+      }
+      const params = new URLSearchParams({
+        imageUrl: generatedImageUrl,
+        text: textToUse,
+      });
+      navigate(`/editor?${params.toString()}`);
+    };
+
+    const generateImage = useCallback(async () => {
+      // Перевіряємо авторизацію
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Для генерації зображення потрібно увійти в акаунт');
+        return;
+      }
+
+      // Визначаємо тип генерації та необхідну кількість монет
+      const isRegeneration = !!generatedImageUrl;
+      const coinsRequired = isRegeneration ? 50 : 100;
+
+      // Перевіряємо достатність монет
+      if (userCoins < coinsRequired) {
+        alert(`Недостатньо монет для генерації зображення. Потрібно ${coinsRequired} монет. У вас: ${userCoins}`);
+        return;
+      }
+
+      setIsGenerating(true);
+
+      try {
+        console.log("FormData для генерації зображення:", formData);
+
+        // Крок 1: Завантаження фото на Cloudinary (якщо є фото)
+        let photoUrl =
+          "https://res.cloudinary.com/dnma2ioeb/image/upload/v1754218865/pryvitai-photos/tldl1woyxzaqadwzogx1.jpg"; // заглушка
+        if (formData.photo) {
+          const convertToBase64 = (file) =>
+            new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(file);
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = (error) => reject(error);
+            });
+
+          const photoBase64 = await convertToBase64(formData.photo);
+          photoUrl = await uploadPhoto(photoBase64);
+        }
+
+        // Крок 2: Генерація промпта
+        const generatedImagePrompt = await generateImagePrompt(
+          createPromptFluxKontextPro(formData)
+        );
+        const generateImageData = StylizePhotoForPostcardApiSetting(
+          formData,
+          generatedImagePrompt.generatedPrompt,
+          photoUrl
+        );
+
+        console.log("Дані для генерації зображення:", generateImageData);
+
+        if (!generatedImagePrompt)
+          throw new Error("Відсутній згенерований промпт");
+
+        // Крок 3: Генерація зображення через Replicate
+        const replicateResult = await generateImageReplicate(
+          generateImageData,
+          isRegeneration // Передаємо інформацію про тип генерації
+        );
+
+        // Обробляємо нову структуру відповіді
+        const generatedImageUrlFromReplicate = replicateResult.generatedImageUrl || replicateResult;
+        
+        // Оновлюємо баланс монет якщо отримали нове значення
+        if (replicateResult.coinsLeft !== undefined && replicateResult.coinsLeft !== null) {
+          setUserCoins(replicateResult.coinsLeft);
+        }
+
+        // Крок 4: Завантаження згенерованого зображення на Cloudinary
+        const uploadedGeneratedImageUrl = await uploadPhoto(
+          generatedImageUrlFromReplicate
+        );
+        setGeneratedImageUrl(uploadedGeneratedImageUrl);
+
+        // Крок 5: Збереження в галереї користувача
+        await saveImageToGallery(uploadedGeneratedImageUrl);
+
+        if (onImageGenerated) {
+          onImageGenerated("finalGeneratedImageUrl", uploadedGeneratedImageUrl);
+        }
+
+        // Автоскрол після успішної генерації
+        if (scrollToNextSection) setTimeout(() => scrollToNextSection(), 1000);
+      } catch (error) {
+        console.error("Помилка генерації зображення:", error);
+        alert(error.message || 'Виникла помилка при генерації зображення. Спробуйте ще раз.');
+      } finally {
+        setIsGenerating(false);
+      }
+    }, [formData, onImageGenerated, scrollToNextSection, userCoins]);
+
+    const isFormComplete = () => {
+      let completedFields = 0;
+
+      if (formData.cardStyle) completedFields++;
+      if (formData.photo) completedFields++;
+      if (formData.trait) completedFields++;
+
+      return completedFields >= 2;
+    };
+
+    // Передаємо функцію generateImage через ref
+    useEffect(() => {
+      if (onGenerateImageRef) {
+        onGenerateImageRef.current = { generateImage, isGenerating };
+      }
+    }, [generateImage, isGenerating, onGenerateImageRef]);
+
+    // Функція для скачування зображення
+    const handleDownloadImage = async () => {
+      if (!generatedImageUrl) return;
+
+      const filename = `pryvitai-${Date.now()}.png`;
+      await downloadImage(generatedImageUrl, filename);
+    };
+
+    return (
+      <section ref={ref} className="image-generation-section">
+        <div className="generation-controls">
+          <button
+            onClick={generateImage}
+            disabled={isGenerating || !isFormComplete() || userCoins < (generatedImageUrl ? 50 : 100)}
+            className={`generate-image-button ${
+              !isFormComplete() || userCoins < (generatedImageUrl ? 50 : 100) ? "disabled" : ""
+            }`}
+          >
+            {isGenerating ? (
+              <>
+                <span className="loading-spinner"></span>
+                Генерую привітайку
+              </>
+            ) : generatedImageUrl ? (
+              "🔄 Генерувати повторно (50 🪙)"
+            ) : (
+              "🎨 Згенерувати зображення (100 🪙)"
+            )}
+          </button>
+          
+          <div className="coins-info">
+            <span className="coins-count">У вас: {userCoins} 🪙</span>
+            {userCoins < (generatedImageUrl ? 50 : 100) && (
+              <span className="insufficient-coins">
+                Недостатньо монет для генерації (потрібно {generatedImageUrl ? 50 : 100})
+              </span>
+            )}
+          </div>
+        </div>        {isGenerating && (
+          <div className="generation-time-info">
+            <p>Генерація займає орієнтовно 2-3 хвилини</p>
+          </div>
+        )}
+
+        {generatedImageUrl && (
+          <div className="final-image-result">
+            <p>
+              <strong>🖼️ Фінальне згенероване зображення:</strong>
+            </p>
+
+            <div className="image-preview">
+              <img
+                src={generatedImageUrl}
+                alt="Згенероване зображення"
+                className="preview-image"
+              />
+            </div>
+            <p>🌟 Фінальне зображення успішно згенеровано!</p>
+
+            <button onClick={handleDownloadImage} className="download-button">
+              💾 Зберегти привітайку
+            </button>
+
+            <button className="edit-button" onClick={handleEditImage}>
+              ✏️ Додати текст привітання
+            </button>
+          </div>
+        )}
+      </section>
+    );
+  }
+);
+
+export default ImageGenerationSection;

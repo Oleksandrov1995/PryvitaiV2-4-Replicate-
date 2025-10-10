@@ -1,0 +1,84 @@
+.tips-section {
+  background-color: #f9f4ff;
+  padding: 60px 20px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.tips-title-container {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.tips-title {
+  font-size: 2.5rem;
+  color: #333;
+  margin: 0;
+}
+
+.tips-subtitle {
+  font-size: 1.8rem;
+  color: #555;
+  margin: 0;
+  font-weight: 400;
+}
+
+.accordion-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.accordion-item {
+  border-bottom: 1px solid #e9e3f0;
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 20px 25px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 1.1rem;
+  color: #444;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.accordion-question:hover {
+  background-color: #fdfaff;
+}
+
+.accordion-icon {
+  font-size: 1.5rem;
+  color: #8E44EE;
+  transition: transform 0.3s ease-in-out;
+  flex-shrink: 0; /* Забороняє іконці стискатися */
+}
+
+.accordion-icon.active {
+  transform: rotate(180deg);
+}
+
+.accordion-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+  padding: 0 25px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.accordion-answer.active {
+  max-height: 1000px;
+  padding: 10px 25px 20px;
+}

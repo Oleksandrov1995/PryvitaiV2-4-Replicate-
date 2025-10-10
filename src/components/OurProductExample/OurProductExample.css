@@ -1,0 +1,241 @@
+.our-product-example {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.our-product-example .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 60px;
+  line-height: 1.3;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.examples-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  justify-items: center;
+}
+
+.example-card {
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+.example-card:hover {
+  transform: translateY(-8px);
+}
+
+.card-images {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  display: flex;
+  gap: 16px;
+}
+
+.original-image-container {
+  width: 45%;
+  height: 100%;
+  position: relative;
+}
+
+.original-image {
+  width: 100%;
+  height: 75%;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 2px solid #F59E0B;
+  position: relative;
+}
+
+.stylized-image {
+  width: 70%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 2px solid #3B82F6;
+  position: relative;
+}
+
+.original-image img,
+.stylized-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  border-radius: inherit;
+}
+
+.example-card:hover .original-image img,
+.example-card:hover .stylized-image img {
+  transform: scale(1.02);
+}
+
+/* Прибрано glamour-overlay для нового дизайну */
+
+.left-tags {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2;
+  padding: 0;
+}
+
+.category-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.category-tag,
+.subcategory-tag {
+  display: inline-block;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 25px;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.example-content {
+  display: none;
+}
+
+/* Видаляємо відокремлювач між зображеннями */
+
+/* Адаптивність для нового дизайну */
+@media (max-width: 768px) {
+  .our-product-example {
+    padding: 60px 0;
+  }
+  
+  .section-title {
+    font-size: 24px;
+    margin-bottom: 40px;
+    padding: 0 10px;
+  }
+  
+  .examples-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 0 10px;
+  }
+  
+  .example-card {
+    max-width: none;
+  }
+  
+  .card-images {
+    height: 240px;
+    gap: 12px;
+  }
+  
+  .original-image,
+  .stylized-image {
+    border: 3px solid;
+  }
+  
+  .category-tag,
+  .subcategory-tag {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+  
+  .examples-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .card-images {
+    height: 200px;
+    gap: 8px;
+  }
+  
+  .original-image-container {
+    width: 50%;
+  }
+  
+  .stylized-image {
+    width: 50%;
+  }
+  
+  .category-tag,
+  .subcategory-tag {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+  
+  .category-tags {
+    gap: 6px;
+  }
+}
+
+/* Анімації завантаження */
+.example-card {
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.example-card:nth-child(1) { animation-delay: 0.1s; }
+.example-card:nth-child(2) { animation-delay: 0.2s; }
+.example-card:nth-child(3) { animation-delay: 0.3s; }
+.example-card:nth-child(4) { animation-delay: 0.4s; }
+.example-card:nth-child(5) { animation-delay: 0.5s; }
+.example-card:nth-child(6) { animation-delay: 0.6s; }
+.example-card:nth-child(7) { animation-delay: 0.7s; }
+.example-card:nth-child(8) { animation-delay: 0.8s; }
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Эффект для заголовка */
+.section-title {
+  animation: fadeIn 1s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}

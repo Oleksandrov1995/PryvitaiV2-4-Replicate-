@@ -1,0 +1,211 @@
+body {
+  background-color: #f3e5f5; /* Light purple background for the whole page */
+}
+
+.signup-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #9b59b6; /* The purple background from the image */
+}
+
+.signup-container {
+  max-width: 420px;
+  width: 100%;
+  padding: 40px 30px;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.signup-logo {
+  margin-bottom: 20px;
+  color: #8e44ad;
+}
+
+.signup-logo svg {
+    width: 40px;
+    height: 40px;
+    stroke: #8e44ad;
+    stroke-width: 1.5;
+}
+
+
+.signup-container h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.social-login-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.social-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  color: #555;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.social-btn:hover {
+  border-color: #ccc;
+  background-color: #f9f9f9;
+}
+
+.social-btn svg {
+  font-size: 20px;
+}
+
+.google-btn {
+    /* Specific styles if needed */
+}
+
+.facebook-btn {
+    color: #3b5998;
+}
+
+.divider {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  text-align: left;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.input-group input {
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  background-color: #f7f7f7;
+  transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #8e44ad;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.1);
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px; /* Space for the icon */
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  font-size: 20px;
+  padding: 0;
+}
+
+.password-toggle-btn:hover {
+  color: #333;
+}
+
+.submit-btn {
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background-color: #8e44ad;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 10px;
+}
+
+.submit-btn:hover {
+  background-color: #7b2fde;
+}
+
+.login-link {
+  margin-top: 25px;
+  font-size: 15px;
+  color: #555;
+}
+
+.login-link a {
+  color: #8e44ad;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+.error-message, .success-message {
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.error-message {
+    color: #d32f2f;
+    background-color: #ffebee;
+}
+
+.success-message {
+    color: #388e3c;
+    background-color: #e8f5e9;
+}

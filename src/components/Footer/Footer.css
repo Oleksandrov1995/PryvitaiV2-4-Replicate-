@@ -1,0 +1,90 @@
+.footer {
+  background: #fff;
+  padding: 40px 20px 20px;
+  border-top: 1px solid #eee;
+  color: #333;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Бренд */
+.footer-brand {
+  flex: 1;
+  min-width: 220px;
+}
+
+.footer-brand .logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #6a1b9a;
+  margin-bottom: 10px;
+}
+
+.footer-brand p {
+  font-size: 14px;
+  margin-bottom: 15px;
+  color: #444;
+}
+
+
+.social-networks-footer {
+  text-align: center; /* Центрує весь вміст */
+  display: inline-flex;
+  max-width: 960px;
+}
+
+.social-networks-buttons-footer {
+  display: flex;
+  flex-direction: row; /* Розташовує елементи один під одним */
+  gap: 20px; /* Створює вертикальну відстань між ними */
+  padding: 0; /* Скидаємо відступи за замовчуванням */
+  margin: 20px 0 0 0; /* Додаємо відступ зверху */
+  list-style-type: none;
+}
+/* Посилання */
+.footer-links {
+  display: flex;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+.footer-links div {
+  min-width: 120px;
+}
+
+.footer-links h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.footer-links a {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: #555;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #6a1b9a;
+}
+
+/* Низ */
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 13px;
+  color: #777;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}

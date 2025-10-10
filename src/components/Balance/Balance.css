@@ -1,0 +1,274 @@
+.balance-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.balance-header {
+  margin-bottom: 30px;
+}
+
+.balance-header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.balance-content {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.tariff-info {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.tariff-header {
+  margin-bottom: 20px;
+}
+
+.tariff-label {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
+.tariff-card {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: 20px;
+}
+
+.tariff-chart {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  background: #e8e8e8;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-container {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  height: 100%;
+  gap: 2px;
+}
+
+.bar {
+  width: 8px;
+  background: linear-gradient(to top, #ffd93d, #ffed4e);
+  border-radius: 2px;
+  min-height: 10px;
+}
+
+.bar-1 { height: 40%; }
+.bar-2 { height: 60%; }
+.bar-3 { height: 80%; }
+.bar-4 { height: 100%; background: linear-gradient(to top, #ff6b35, #ff8c42); }
+.bar-5 { height: 70%; }
+.bar-6 { height: 50%; }
+.bar-7 { height: 30%; }
+
+.tariff-details {
+  flex: 1;
+}
+
+.tariff-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.tariff-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #7c3aed;
+}
+
+.tariff-badge {
+  background: #7c3aed;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.tariff-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.stat-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.stat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-number {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.stat-remaining {
+  font-size: 12px;
+  color: #999;
+}
+
+.balance-info {
+  text-align: center;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.balance-label {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.balance-amount {
+  font-size: 32px;
+  font-weight: 700;
+  color: #7c3aed;
+  margin-bottom: 20px;
+}
+
+.top-up-button {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+}
+
+.top-up-button:hover {
+  background: #6d28d9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+}
+
+.error {
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+}
+
+.loading {
+  color: #666;
+}
+
+/* Адаптивність */
+@media (max-width: 768px) {
+  .balance-container {
+    padding: 15px;
+  }
+
+  .balance-header h2 {
+    font-size: 24px;
+  }
+
+  .tariff-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .tariff-chart {
+    margin: 0 auto;
+  }
+
+  .tariff-name {
+    justify-content: center;
+  }
+
+  .stat-item {
+    justify-content: center;
+    text-align: left;
+  }
+
+  .balance-amount {
+    font-size: 28px;
+  }
+
+  .top-up-button {
+    padding: 14px 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .balance-header h2 {
+    font-size: 20px;
+  }
+
+  .tariff-card {
+    padding: 15px;
+  }
+
+  .balance-info {
+    padding: 20px;
+  }
+
+  .balance-amount {
+    font-size: 24px;
+  }
+}

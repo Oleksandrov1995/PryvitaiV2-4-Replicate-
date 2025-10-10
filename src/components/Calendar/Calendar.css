@@ -1,0 +1,466 @@
+.calendar-container {
+  max-width: 500px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.calendar-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0 0 24px 0;
+}
+
+.calendar-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #4a5568;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+  background: #f7fafc;
+  color: #2d3748;
+}
+
+.month-year {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+  min-width: 180px;
+  text-align: center;
+}
+
+.day-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.day-header {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #718096;
+  padding: 8px 4px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 24px;
+}
+
+.calendar-day {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  background: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  min-height: 60px;
+  max-height: 60px;
+  width: 100%;
+  padding: 4px 2px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.calendar-day.empty {
+  background: transparent;
+  cursor: default;
+}
+
+.calendar-day:hover:not(.empty) {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+.calendar-day.has-event {
+  background: #8b5af6;
+  color: white;
+}
+
+.calendar-day.has-event:hover {
+  background: #7c3aed;
+}
+
+/* Стилі для дат з бази даних */
+.calendar-day.has-db-event {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: 2px solid #059669;
+}
+
+.calendar-day.has-db-event:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+}
+
+.calendar-day.selected {
+  background: #6b46c1 !important;
+  color: white;
+  box-shadow: 0 4px 12px rgba(107, 70, 193, 0.4);
+}
+
+.calendar-day.today {
+  position: relative;
+  background: linear-gradient(135deg, #fef5e7 0%, #fed7aa 100%);
+  border: 2px solid #f97316;
+  color: #ea580c;
+  font-weight: 700;
+}
+
+.calendar-day.today:hover {
+  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+  transform: translateY(-1px);
+}
+
+.calendar-day.today.selected {
+  background: #6b46c1 !important;
+  color: white;
+  border-color: #6b46c1;
+}
+
+.today-indicator {
+  font-size: 8px;
+  font-weight: 600;
+  color: #ea580c;
+  background: rgba(249, 115, 22, 0.1);
+  padding: 1px 3px;
+  border-radius: 3px;
+  line-height: 1.1;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.day-number {
+  font-weight: 600;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.event-label {
+  font-size: 9px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1px 3px;
+  border-radius: 3px;
+  line-height: 1.1;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* Стилі для подій з бази даних */
+.event-label.db-event {
+  background: rgba(255, 255, 255, 0.9);
+  color: #047857;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.event-label.db-event.multiple {
+  background: rgba(255, 255, 255, 1);
+  color: #047857;
+  font-weight: 700;
+  border: 2px solid #047857;
+}
+
+.db-events {
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* Різні кольори для різних типів подій */
+.calendar-day .event-label.Петро {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.calendar-day .event-label.Юрій {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.calendar-day .event-label.Емма {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.calendar-day .event-label.День {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.calendar-day .event-label.св {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.calendar-day .event-label.Нестор {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.calendar-day .event-label.Христ {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.calendar-day .event-label.Адріан {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Стилі для списку подій та кнопок */
+.date-actions {
+  margin-top: 20px;
+}
+
+.events-list {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.events-list h4 {
+  margin: 0 0 12px 0;
+  color: #2d3748;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.event-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.event-info {
+  font-size: 13px;
+  color: #4a5568;
+  flex: 1;
+}
+
+.event-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-event-button {
+  background: #ed8936;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.edit-event-button:hover {
+  background: #dd6b20;
+}
+
+.delete-event-button {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.delete-event-button:hover {
+  background: #c53030;
+}
+
+.add-new-event-button {
+  background: #48bb78;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s ease;
+}
+
+.add-new-event-button:hover {
+  background: #38a169;
+}
+
+.add-date-button {
+  width: 100%;
+  background: #8b5af6;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-date-button:hover {
+  background: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 90, 246, 0.3);
+}
+
+.add-date-button:active {
+  transform: translateY(0);
+}
+
+.add-date-button.disabled,
+.add-date-button:disabled {
+  background: #cbd5e0;
+  color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.add-date-button.disabled:hover,
+.add-date-button:disabled:hover {
+  background: #cbd5e0;
+  transform: none;
+  box-shadow: none;
+}
+
+.date-options {
+  margin: 20px 0;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.reminder-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #2d3748;
+  gap: 8px;
+}
+
+.reminder-checkbox {
+  display: none;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border: 2px solid #cbd5e0;
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.reminder-checkbox:checked + .checkmark {
+  background: #8b5af6;
+  border-color: #8b5af6;
+}
+
+.reminder-checkbox:checked + .checkmark::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-container:hover .checkmark {
+  border-color: #8b5af6;
+  box-shadow: 0 0 0 3px rgba(139, 90, 246, 0.1);
+}
+
+.checkbox-label {
+  font-weight: 500;
+  user-select: none;
+}
+
+/* Адаптивні стилі */
+@media (max-width: 480px) {
+  .calendar-container {
+    padding: 16px;
+    margin: 16px;
+  }
+  
+  .calendar-title {
+    font-size: 16px;
+  }
+  
+  .month-year {
+    font-size: 14px;
+    min-width: 140px;
+  }
+  
+  .calendar-day {
+    min-height: 50px;
+    max-height: 50px;
+    font-size: 12px;
+    padding: 3px 2px;
+  }
+  
+  .day-number {
+    font-size: 12px;
+  }
+  
+  .event-label {
+    font-size: 9px;
+    padding: 1px 2px;
+  }
+}

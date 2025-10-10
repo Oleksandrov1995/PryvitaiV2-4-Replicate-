@@ -1,0 +1,152 @@
+/* Основний контейнер секції */
+.contact-info {
+  display: flex;
+  align-items: center;
+  gap: 40px; /* Відстань між текстом та зображенням */
+  background-color: #f9f4ff; /* Світло-фіолетовий фон */
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid #e0d0f5;
+  max-width: 960px;
+  margin: 70px auto; /* Центрування секції на сторінці */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+   text-align: start;
+}
+
+/* Блок з текстом */
+.contact-text {
+  flex: 1; /* Займає доступний простір */
+}
+.contact-info svg {
+  margin-right: 12px;
+  color: #8E44EE; /* Колір іконок */
+  font-size: 1.1rem; /* Трохи скоригуємо розмір */
+  vertical-align: middle;
+}
+.contact-info a:hover {
+  color: #6F15E5; /* Колір іконок при наведенні */
+}
+
+.contact-text h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 16px;
+}
+
+.contact-text p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 35px;
+}
+
+/* Стилізація контактних даних (email, телефон) */
+.contact-text p i {
+  margin-right: 12px;
+  margin-bottom: 35px;
+  color: #8E44EE; /* Колір іконок */
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+.contact-text p a {
+  color: #555;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.contact-text p a:hover {
+  color: #8E44EE; /* Колір при наведенні */
+}
+
+/* Блок із зображенням */
+.contact-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.contact-image img {
+  max-width: 100%;
+  min-width: 512px;
+  height: auto;
+  border-radius: 12px; /* Закруглені кути для зображення */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+.support-buttons {
+  display: inline-flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 70px 0;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #a855f7;
+  transition: all 0.3s ease;
+  width: 270px;
+}
+
+.btn.outline {
+  background: white;
+  color: #6a1b9a;
+  text-decoration: none;
+}
+
+.btn.outline:hover {  background: #7e22ce;
+  color: white;
+  border: none;
+}
+.social-share-section {
+  text-align: center; /* Центрує весь вміст */
+  margin: 50px auto; /* Додає відступ зверху */
+    background-color: #f9f4ff; /* Світло-фіолетовий фон */
+  padding: 40px;
+  border-radius: 16px;
+   border: 1px solid #e0d0f5;
+    max-width: 960px;
+}
+
+.social-share-title {
+  font-family: Archivo; /* Heading */
+  font-size: 24px; 
+  line-height: 32px; 
+  font-weight: 500; 
+  color: #171A1FFF; /* neutral-900 */
+text-align: center;
+}
+.social-share-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 70px 10px;
+  flex-wrap: wrap;
+   list-style-type: none;
+}
+
+
+/* Адаптивність для мобільних пристроїв */
+@media (max-width: 768px) {
+  .contact-info {
+    flex-direction: column; /* Розташовуємо елементи один під одним */
+    padding: 24px;
+    gap: 30px;
+  }
+
+  .contact-text h2 {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+
+  .contact-image img {
+    min-width: 300px;
+    max-width: 100%;
+  }
+}
