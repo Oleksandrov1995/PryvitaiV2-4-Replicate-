@@ -3,6 +3,16 @@ import introPNG from "../../images/introPNG.png";
 import './ActionsIntro.css';
 
 const ActionsIntro = () => {
+	const scrollToActionsCards = () => {
+		const actionsCardsElement = document.querySelector('.actions-cards-container, .actions-cards, [class*="actions-cards"]');
+		if (actionsCardsElement) {
+			actionsCardsElement.scrollIntoView({ 
+				behavior: 'smooth',
+				block: 'start'
+			});
+		}
+	};
+
 	return (
 	  <section className="hero">
       <div className="hero-content">
@@ -18,7 +28,9 @@ const ActionsIntro = () => {
           Та листівку буде створено привітайком за хвилину
         </p>
 
-        <button className="hero-cta">Створювати привітайки безкоштовно</button>
+        <button className="hero-cta" onClick={scrollToActionsCards}>
+          Створювати привітайки безкоштовно
+        </button>
       </div>
     </section>
 	);

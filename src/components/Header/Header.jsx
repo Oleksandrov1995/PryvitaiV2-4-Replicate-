@@ -5,6 +5,7 @@ import './Header.css';
 import logo from '../../images/logo.png';
 import logoText from '../../images/logoText.png';
 import ProfileSettings from '../ProfileSettings/ProfileSettings';
+import Events from '../Events/Events';
 import { API_URLS } from '../../config/api';
 const Header = () => {
    const navigate = useNavigate();
@@ -12,6 +13,7 @@ const Header = () => {
   const [isHelpMenuOpen, setIsHelpMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false); // Стан для меню користувача
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false); // Стан для модального вікна
+  const [isEventsModalOpen, setIsEventsModalOpen] = useState(false); // Стан для модального вікна подій
   const [avatar, setAvatar] = useState(''); // Стан для збереження даних профілю
   const helpMenuRef = useRef(null);
   const userMenuRef = useRef(null); 
@@ -30,9 +32,20 @@ const Header = () => {
         setIsUserMenuOpen(false);
       }
     };
+
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape') {
+        setIsEventsModalOpen(false);
+        setIsSettingsModalOpen(false);
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscapeKey);
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
     };
   }, []);
 
@@ -105,7 +118,12 @@ const Header = () => {
         <Link to="/tariffs">Тарифи</Link>
         <Link to="/actions">Акції</Link>
         <Link to="/gallery">Галерея</Link>
-        <Link to="/events">Події</Link>
+        <button 
+          className="nav-link-button" 
+          onClick={() => setIsEventsModalOpen(true)}
+        >
+          Події
+        </button>
       </nav>
 
       {/* Авторизація */}
@@ -178,6 +196,19 @@ const Header = () => {
     </header>
     {isSettingsModalOpen && (
         <ProfileSettings onClose={handleCloseSettings} />
+      )}
+    {isEventsModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsEventsModalOpen(false)}>
+          <div className="modal-content events-modal" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="modal-close-btn" 
+              onClick={() => setIsEventsModalOpen(false)}
+            >
+              ✕
+            </button>
+            <Events />
+          </div>
+        </div>
       )} </>
   );
 };

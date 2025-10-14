@@ -7,12 +7,43 @@ import { saveEventDate, getEventDates, updateEventDate, deleteEventDate } from '
 
 const Calendar = () => {
   const navigate = useNavigate();
-  const [currentDate, setCurrentDate] = useState(new Date()); // Поточна дата замість серпня 2025
-  const [selectedDate, setSelectedDate] = useState(null); // Додаємо стан для вибраної дати
+  
+  // Ініціалізуємо currentDate з урахуванням збереженої дати
+  const [currentDate, setCurrentDate] = useState(() => {
+    const savedDate = localStorage.getItem('calendar-selectedDate');
+    if (savedDate && savedDate.includes('-')) {
+      try {
+        const [year, month, day] = savedDate.split('-').map(Number);
+        
+        // Проста валідація дати
+        const date = new Date(year, month - 1, day);
+        const isValidDate = date.getFullYear() === year && 
+                           date.getMonth() === month - 1 && 
+                           date.getDate() === day &&
+                           year >= 1900 && year <= 2100;
+        
+        if (isValidDate) {
+          return new Date(year, month - 1); // month - 1 тому що місяці в Date починаються з 0
+        } else {
+          localStorage.removeItem('calendar-selectedDate');
+        }
+      } catch (error) {
+        localStorage.removeItem('calendar-selectedDate'); // Очищуємо некоректну дату
+      }
+    }
+    return new Date();
+  });
+  
+  // Завантажуємо вибрану дату з localStorage або встановлюємо null
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const savedDate = localStorage.getItem('calendar-selectedDate');
+    return savedDate || null;
+  });
   const [isReminderEnabled, setIsReminderEnabled] = useState(false); // Стан для галочки нагадування
   const [showForm, setShowForm] = useState(false); // Стан для відображення форми після натискання "Додати дату"
   const [editingEvent, setEditingEvent] = useState(null); // Стан для редагування події
   const [selectedDateEvents, setSelectedDateEvents] = useState([]); // Події для вибраної дати
+  const [isTransitioning, setIsTransitioning] = useState(false); // Стан для анімації переходу між місяцями
   
   // Стани для збору даних з форми
   const [formData, setFormData] = useState({
@@ -25,6 +56,11 @@ const Calendar = () => {
   
   // Стан для збереження дат подій з бекенду
   const [eventDatesFromDB, setEventDatesFromDB] = useState([]);
+  
+  // Стани для швидкої навігації
+  const [showQuickNav, setShowQuickNav] = useState(false);
+  const [quickNavYear, setQuickNavYear] = useState(currentDate.getFullYear());
+  const [quickNavMonth, setQuickNavMonth] = useState(currentDate.getMonth());
   
   // Особливі дати з різними типами подій (серпень 2025)
   const specialDates = {
@@ -40,12 +76,73 @@ const Calendar = () => {
           setEventDatesFromDB(response.eventDates);
         }
       } catch (error) {
-        console.error('Помилка завантаження дат подій:', error);
+        // Помилка завантаження дат подій
       }
     };
 
     loadEventDates();
   }, []);
+
+  // Збереження вибраної дати в localStorage при її зміні
+  useEffect(() => {
+    if (selectedDate) {
+      localStorage.setItem('calendar-selectedDate', selectedDate);
+    }
+  }, [selectedDate]);
+
+  // Завантаження подій для збереженої дати після завантаження даних з бекенду
+  useEffect(() => {
+    if (selectedDate && eventDatesFromDB.length > 0) {
+      const eventsForDate = getEventsForDate(selectedDate);
+      setSelectedDateEvents(eventsForDate);
+    }
+  }, [selectedDate, eventDatesFromDB]);
+
+  // Закриття швидкої навігації при кліку поза нею
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showQuickNav && !event.target.closest('.month-year-container')) {
+        setShowQuickNav(false);
+      }
+    };
+
+    if (showQuickNav) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showQuickNav]);
+
+  // Перехід до місяця збереженої дати при першому завантаженні (резервна логіка)
+  useEffect(() => {
+    const savedDate = localStorage.getItem('calendar-selectedDate');
+    if (savedDate && savedDate.includes('-') && eventDatesFromDB.length > 0) {
+      try {
+        const [year, month, day] = savedDate.split('-').map(Number);
+        
+        // Валідація дати в резервній логіці
+        const date = new Date(year, month - 1, day);
+        const isValidDate = date.getFullYear() === year && 
+                           date.getMonth() === month - 1 && 
+                           date.getDate() === day &&
+                           year >= 1900 && year <= 2100;
+        
+        if (isValidDate) {
+          const savedDateObj = new Date(year, month - 1);
+          const currentDateObj = new Date(currentDate.getFullYear(), currentDate.getMonth());
+          
+          // Якщо збережена дата в іншому місяці (резервна перевірка)
+          if (savedDateObj.getFullYear() !== currentDateObj.getFullYear() || 
+              savedDateObj.getMonth() !== currentDateObj.getMonth()) {
+            setCurrentDate(savedDateObj);
+          }
+        } else {
+          localStorage.removeItem('calendar-selectedDate');
+        }
+      } catch (error) {
+        localStorage.removeItem('calendar-selectedDate');
+      }
+    }
+  }, [eventDatesFromDB]); // Викликається тільки після завантаження подій
 
   const monthNames = [
     'січень', 'лютий', 'березень', 'квітень', 'травень', 'червень',
@@ -67,6 +164,31 @@ const Calendar = () => {
     return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   };
 
+  // Функція для перевірки чи вибрана дата належить поточному місяцю
+  const isSelectedDateInCurrentMonth = (year, month) => {
+    if (!selectedDate) return false;
+    const currentMonthPrefix = `${year}-${String(month + 1).padStart(2, '0')}`;
+    return selectedDate.startsWith(currentMonthPrefix);
+  };
+
+  // Функція для валідації збереженої дати
+  const validateSavedDate = (dateString) => {
+    if (!dateString) return false;
+    
+    try {
+      const [year, month, day] = dateString.split('-').map(Number);
+      
+      // Перевіряємо, чи дата коректна
+      const date = new Date(year, month - 1, day);
+      return date.getFullYear() === year && 
+             date.getMonth() === month - 1 && 
+             date.getDate() === day &&
+             year >= 1900 && year <= 2100; // Розумні межі для року
+    } catch (error) {
+      return false;
+    }
+  };
+
   // Функція для перевірки чи дата є в збережених подіях
   const isEventDate = (dateKey) => {
     return eventDatesFromDB.find(event => event.date === dateKey);
@@ -85,23 +207,45 @@ const Calendar = () => {
   };
 
   const goToPreviousMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
-    setSelectedDate(null); // Очищуємо вибрану дату при зміні місяця
-    setIsReminderEnabled(false); // Скидаємо галочку нагадування
-    setShowForm(false); // Приховуємо форму при зміні місяця
-    setFormData({ gender: '', age: '', name: '', person: '', greetingSubject: '' }); // Очищуємо дані форми
-    setEditingEvent(null); // Очищуємо режим редагування
-    setSelectedDateEvents([]); // Очищуємо події вибраної дати
+    if (isTransitioning) return; // Запобігаємо множинним кліків під час анімації
+    
+    setIsTransitioning(true);
+    
+    // Мінімальна затримка для плавного переходу
+    setTimeout(() => {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
+      // Зберігаємо вибрану дату при зміні місяця
+      setIsReminderEnabled(false); // Скидаємо галочку нагадування
+      setShowForm(false); // Приховуємо форму при зміні місяця
+      setFormData({ gender: '', age: '', name: '', person: '', greetingSubject: '' }); // Очищуємо дані форми
+      setEditingEvent(null); // Очищуємо режим редагування
+      // selectedDateEvents залишаємо, щоб показати події для вибраної дати навіть в іншому місяці
+      
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 150); // Додаткова затримка для завершення анімації
+    }, 200); // Основна затримка
   };
 
   const goToNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
-    setSelectedDate(null); // Очищуємо вибрану дату при зміні місяця
-    setIsReminderEnabled(false); // Скидаємо галочку нагадування
-    setShowForm(false); // Приховуємо форму при зміні місяця
-    setFormData({ gender: '', age: '', name: '', person: '', greetingSubject: '' }); // Очищуємо дані форми
-    setEditingEvent(null); // Очищуємо режим редагування
-    setSelectedDateEvents([]); // Очищуємо події вибраної дати
+    if (isTransitioning) return; // Запобігаємо множинним кліків під час анімації
+    
+    setIsTransitioning(true);
+    
+    // Мінімальна затримка для плавного переходу
+    setTimeout(() => {
+      setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+      // Зберігаємо вибрану дату при зміні місяця
+      setIsReminderEnabled(false); // Скидаємо галочку нагадування
+      setShowForm(false); // Приховуємо форму при зміні місяця
+      setFormData({ gender: '', age: '', name: '', person: '', greetingSubject: '' }); // Очищуємо дані форми
+      setEditingEvent(null); // Очищуємо режим редагування
+      // selectedDateEvents залишаємо, щоб показати події для вибраної дати навіть в іншому місяці
+      
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 150); // Додаткова затримка для завершення анімації
+    }, 200); // Основна затримка
   };
 
   // Функція перевірки авторизації
@@ -112,6 +256,84 @@ const Calendar = () => {
       return false;
     }
     return true;
+  };
+
+  // Функції для швидкої навігації
+  const toggleQuickNav = () => {
+    setShowQuickNav(!showQuickNav);
+    if (!showQuickNav) {
+      // При відкритті встановлюємо поточні значення
+      setQuickNavYear(currentDate.getFullYear());
+      setQuickNavMonth(currentDate.getMonth());
+    }
+  };
+
+  const applyQuickNav = () => {
+    setCurrentDate(new Date(quickNavYear, quickNavMonth));
+    setShowQuickNav(false);
+    setSelectedDateEvents([]); // Очищуємо події при зміні місяця
+  };
+
+  const goToToday = () => {
+    const today = new Date();
+    setCurrentDate(new Date(today.getFullYear(), today.getMonth()));
+    setShowQuickNav(false);
+    setSelectedDateEvents([]);
+  };
+
+  // Генеруємо роки для швидкої навігації (+-10 років від поточного)
+  const generateYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+      years.push(year);
+    }
+    return years;
+  };
+
+  // Функція для обчислення віку на поточний рік календаря
+  const calculateAge = (event, calendarYear) => {
+    if (!event.age || !event.isRecurring) {
+      return null;
+    }
+
+    // Отримуємо оригінальний рік події та базовий вік
+    let originalEventDate, originalYear, baseAge;
+    
+    if (event.isGenerated) {
+      // Для згенерованої події витягуємо оригінальний ID
+      const originalId = event._id.split('_')[0];
+      // Знаходимо оригінальну подію в eventDatesFromDB
+      const originalEvent = eventDatesFromDB.find(e => e._id === originalId);
+      if (originalEvent) {
+        originalEventDate = new Date(originalEvent.date);
+        originalYear = originalEventDate.getFullYear();
+        baseAge = parseInt(originalEvent.age);
+      } else {
+        return null;
+      }
+    } else {
+      // Для оригінальної події
+      originalEventDate = new Date(event.date);
+      originalYear = originalEventDate.getFullYear();
+      baseAge = parseInt(event.age);
+    }
+    
+    // Обчислюємо різницю років і підраховуємо поточний вік
+    const yearsDifference = calendarYear - originalYear;
+    return baseAge + yearsDifference;
+  };
+
+  // Функція для форматування відображення віку
+  const formatAgeDisplay = (event) => {
+    const calendarYear = currentDate.getFullYear();
+    const age = calculateAge(event, calendarYear);
+    
+    if (age === null) {
+      return '';
+    }
+    
+    return ` (${age} ${age === 1 ? 'рік' : age < 5 ? 'роки' : 'років'})`;
   };
 
   // Функції для обробки змін в секціях
@@ -185,26 +407,23 @@ const Calendar = () => {
       return;
     }
     
-    if (window.confirm(`Ви дійсно хочете видалити подію "${event.name} - ${event.greetingSubject}"?`)) {
-      try {
-        const response = await deleteEventDate(event._id);
+    try {
+      const response = await deleteEventDate(event._id);
+      
+      if (response.success) {
+        alert('Подію успішно видалено!');
         
-        if (response.success) {
-          alert('Подію успішно видалено!');
-          
-          // Перезавантажуємо дані подій з бекенду
-          const updatedResponse = await getEventDates();
-          if (updatedResponse.success) {
-            setEventDatesFromDB(updatedResponse.eventDates);
-            // Оновлюємо події для вибраної дати
-            const eventsForDate = updatedResponse.eventDates.filter(e => e.date === selectedDate);
-            setSelectedDateEvents(eventsForDate);
-          }
+        // Перезавантажуємо дані подій з бекенду
+        const updatedResponse = await getEventDates();
+        if (updatedResponse.success) {
+          setEventDatesFromDB(updatedResponse.eventDates);
+          // Оновлюємо події для вибраної дати
+          const eventsForDate = updatedResponse.eventDates.filter(e => e.date === selectedDate);
+          setSelectedDateEvents(eventsForDate);
         }
-      } catch (error) {
-        console.error('Помилка видалення:', error);
-        alert('Помилка при видаленні події: ' + error.message);
       }
+    } catch (error) {
+      alert('Помилка при видаленні події: ' + error.message);
     }
   };
 
@@ -228,6 +447,7 @@ const Calendar = () => {
         date: selectedDate,
         formattedDate: formattedDate,
         isReminderEnabled: isReminderEnabled,
+        isRecurring: true, // Автоматично дублювати на кожний рік
         gender: formData.gender,
         age: formData.age,
         name: formData.name,
@@ -248,7 +468,10 @@ const Calendar = () => {
         
         if (response.success) {
           const action = editingEvent ? 'оновлено' : 'збережено';
-          alert(`Подію на дату ${formattedDate} успішно ${action}!`);
+          const message = editingEvent && editingEvent.isRecurring 
+            ? `Щорічну подію успішно ${action}! Зміни застосовано до всіх повторень.`
+            : `Подію на дату ${formattedDate} успішно ${action}!`;
+          alert(message);
           
           // Перезавантажуємо дані подій з бекенду
           const updatedResponse = await getEventDates();
@@ -265,7 +488,6 @@ const Calendar = () => {
         }
         
       } catch (error) {
-        console.error('Помилка збереження:', error);
         alert('Помилка при збереженні дати: ' + error.message);
         return; // Не очищуємо форму при помилці
       }
@@ -280,6 +502,18 @@ const Calendar = () => {
 
   const handleDateClick = (day, month, year) => {
     const dateKey = formatDateKey(year, month, day);
+    
+    // Якщо користувач клікає на вже вибрану дату - очищуємо вибір
+    if (selectedDate === dateKey) {
+      setSelectedDate(null);
+      setSelectedDateEvents([]);
+      setShowForm(false);
+      setEditingEvent(null);
+      setFormData({ gender: '', age: '', name: '', person: '', greetingSubject: '' });
+      setIsReminderEnabled(false);
+      return;
+    }
+    
     setSelectedDate(dateKey);
     
     // Отримуємо всі події для цієї дати
@@ -298,10 +532,8 @@ const Calendar = () => {
     const month = currentDate.getMonth();
     const daysInMonth = getDaysInMonth(currentDate);
     const firstDay = getFirstDayOfMonth(currentDate);
-    
-    const days = [];
-    
-    // Порожні клітинки для днів попереднього місяця
+
+    const days = [];    // Порожні клітинки для днів попереднього місяця
     for (let i = 0; i < firstDay; i++) {
       days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
     }
@@ -311,7 +543,12 @@ const Calendar = () => {
       const dateKey = formatDateKey(year, month, day);
       const specialDate = specialDates[dateKey];
       const eventsFromDB = getEventsForDate(dateKey); // Отримуємо всі події для цієї дати
-      const isSelected = selectedDate === dateKey;
+      
+      // Перевіряємо, чи дата вибрана І чи вона належить поточному місяцю
+      // Також відключаємо виділення під час анімації переходу
+      const isSelected = !isTransitioning && 
+                        selectedDate === dateKey && 
+                        isSelectedDateInCurrentMonth(year, month);
       
       // Перевірка чи це поточна дата
       const today = new Date();
@@ -324,7 +561,10 @@ const Calendar = () => {
           key={day} 
           className={`calendar-day ${specialDate ? 'has-event' : ''} ${eventsFromDB.length > 0 ? 'has-db-event' : ''} ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}`}
           onClick={() => handleDateClick(day, month, year)}
-          title={eventsFromDB.length > 0 ? `${eventsFromDB.length} події: ${eventsFromDB.map(e => `${e.name} - ${e.greetingSubject}`).join(', ')}` : ''}
+          title={eventsFromDB.length > 0 ? `${eventsFromDB.length} події: ${eventsFromDB.map(e => {
+            const ageDisplay = formatAgeDisplay(e);
+            return `${e.name} - ${e.greetingSubject}${ageDisplay}`;
+          }).join(', ')}` : ''}
         >
           <span className="day-number">{day}</span>
           {specialDate && (
@@ -356,15 +596,70 @@ const Calendar = () => {
       
         
         <div className="calendar-navigation">
-          <button className="nav-button prev" onClick={goToPreviousMonth}>
+          <button 
+            className={`nav-button prev ${isTransitioning ? 'disabled' : ''}`} 
+            onClick={goToPreviousMonth}
+            disabled={isTransitioning}
+          >
             ‹
           </button>
           
-          <h3 className="month-year">
-            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()} р.
-          </h3>
+          <div className="month-year-container">
+            <h3 className="month-year" onClick={toggleQuickNav}>
+              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()} р.
+              <span className="quick-nav-icon">⚙</span>
+            </h3>
+            
+            {showQuickNav && (
+              <div className="quick-nav-dropdown">
+                <div className="quick-nav-header">
+                  <h4>Швидка навігація</h4>
+                  <button className="close-quick-nav" onClick={() => setShowQuickNav(false)}>✕</button>
+                </div>
+                
+                <div className="quick-nav-selectors">
+                  <div className="selector-group">
+                    <label>Місяць:</label>
+                    <select 
+                      value={quickNavMonth} 
+                      onChange={(e) => setQuickNavMonth(parseInt(e.target.value))}
+                    >
+                      {monthNames.map((month, index) => (
+                        <option key={index} value={index}>{month}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="selector-group">
+                    <label>Рік:</label>
+                    <select 
+                      value={quickNavYear} 
+                      onChange={(e) => setQuickNavYear(parseInt(e.target.value))}
+                    >
+                      {generateYears().map(year => (
+                        <option key={year} value={year}>{year}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="quick-nav-actions">
+                  <button className="today-button" onClick={goToToday}>
+                    Сьогодні
+                  </button>
+                  <button className="apply-button" onClick={applyQuickNav}>
+                    Перейти
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
           
-          <button className="nav-button next" onClick={goToNextMonth}>
+          <button 
+            className={`nav-button next ${isTransitioning ? 'disabled' : ''}`} 
+            onClick={goToNextMonth}
+            disabled={isTransitioning}
+          >
             ›
           </button>
         </div>
@@ -378,12 +673,13 @@ const Calendar = () => {
         </div>
       </div>
       
-      <div className="calendar-grid">
+      <div className={`calendar-grid ${isTransitioning ? 'transitioning' : ''}`}>
         {renderCalendarDays()}
       </div>
       
       {!showForm && selectedDate && (
         <div className="date-actions">
+          
           {selectedDateEvents.length === 0 ? (
             // Дата без подій - показуємо кнопку "Додати дату"
             <button 
@@ -399,18 +695,21 @@ const Calendar = () => {
               {selectedDateEvents.map((event, index) => (
                 <div key={event._id} className="event-item">
                   <span className="event-info">
-                    {event.name} - {event.greetingSubject}
+                    {event.name}{event.isRecurring && formatAgeDisplay(event)} - {event.greetingSubject}
+                    
                   </span>
                   <div className="event-actions">
                     <button 
                       className="edit-event-button"
                       onClick={() => handleEditEvent(event)}
+                      title={event.isRecurring ? "Редагування застосується до всіх повторень" : ""}
                     >
                       Редагувати
                     </button>
                     <button 
                       className="delete-event-button"
                       onClick={() => handleDeleteEvent(event)}
+                      title={event.isRecurring ? "Видалення застосується до всіх повторень" : ""}
                     >
                       Видалити
                     </button>
@@ -450,20 +749,7 @@ const Calendar = () => {
           <GreetingSubjectSection 
             onSubjectChange={handleSubjectChange}
           />
-          <div className="date-options">
-            <div className="reminder-option">
-              <label className="checkbox-container">
-                <input
-                  type="checkbox"
-                  checked={isReminderEnabled}
-                  onChange={(e) => setIsReminderEnabled(e.target.checked)}
-                  className="reminder-checkbox"
-                />
-                <span className="checkmark"></span>
-                <span className="checkbox-label">Одноразове нагадування</span>
-              </label>
-            </div>
-          </div>
+        
           <button className="add-date-button" onClick={handleSaveDate}>
             {editingEvent ? 'Оновити' : 'Зберегти'}
           </button>

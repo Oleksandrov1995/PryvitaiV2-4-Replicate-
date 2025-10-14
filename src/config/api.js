@@ -43,6 +43,12 @@ const API_CONFIG = {
     // Платежі
     CREATE_PAYMENT: '/payment/create',
     VERIFY_PAYMENT: '/payment/verify',
+
+    // Події календаря
+    EVENTS_LIST: '/events',
+    EVENTS_CREATE: '/events',
+    EVENTS_UPDATE: (eventId) => `/events/${eventId}`,
+    EVENTS_DELETE: (eventId) => `/events/${eventId}`,
   }
 };
 
@@ -82,6 +88,14 @@ export const API_URLS = {
   // Платежі
   CREATE_PAYMENT: getApiUrl(API_CONFIG.ENDPOINTS.CREATE_PAYMENT),
   VERIFY_PAYMENT: getApiUrl(API_CONFIG.ENDPOINTS.VERIFY_PAYMENT),
+
+  // Події календаря
+  events: {
+    list: getApiUrl(API_CONFIG.ENDPOINTS.EVENTS_LIST),
+    create: getApiUrl(API_CONFIG.ENDPOINTS.EVENTS_CREATE),
+    update: (eventId) => `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EVENTS_UPDATE(eventId)}`,
+    delete: (eventId) => `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EVENTS_DELETE(eventId)}`,
+  }
 };
 
 export default API_CONFIG;

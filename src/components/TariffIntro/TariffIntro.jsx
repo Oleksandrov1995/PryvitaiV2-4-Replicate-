@@ -1,8 +1,17 @@
 import React from "react";
-import { FiEdit3, FiUploadCloud, FiPlusCircle } from "react-icons/fi";
 import "./TariffIntro.css";
 import introPNG from "../../images/introPNG.png";
 const TariffIntro = ({ onChooseStyle, onUploadPhoto, onChooseAddons, onStart }) => {
+	const scrollToTariffPlan = () => {
+		const tariffPlanElement = document.querySelector('.pricing-title');
+		if (tariffPlanElement) {
+			tariffPlanElement.scrollIntoView({ 
+				behavior: 'smooth',
+				block: 'start'
+			});
+		}
+	};
+
 	return (
 	  <section className="hero">
       <div className="hero-content">
@@ -18,7 +27,9 @@ const TariffIntro = ({ onChooseStyle, onUploadPhoto, onChooseAddons, onStart }) 
           Та листівку буде створено привітайком за хвилину
         </p>
 
-        <button className="hero-cta">Створювати привітайки</button>
+        <button className="hero-cta" onClick={scrollToTariffPlan}>
+          Створювати привітайки
+        </button>
       </div>
     </section>
 	);

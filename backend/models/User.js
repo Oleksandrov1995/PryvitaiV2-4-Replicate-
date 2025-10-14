@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
       },
+      isRecurring: {
+        type: Boolean,
+        default: false
+      },
       gender: {
         type: String,
         default: ''

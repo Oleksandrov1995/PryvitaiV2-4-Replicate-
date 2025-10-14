@@ -8,6 +8,7 @@ const addEventDate = async (req, res) => {
       date, 
       formattedDate, 
       isReminderEnabled, 
+      isRecurring,
       gender, 
       age, 
       name, 
@@ -36,6 +37,7 @@ const addEventDate = async (req, res) => {
       date,
       formattedDate,
       isReminderEnabled: isReminderEnabled || false,
+      isRecurring: isRecurring || false,
       gender: gender || '',
       age: age || '',
       name: name, // обов'язкове
@@ -75,9 +77,43 @@ const getEventDates = async (req, res) => {
       });
     }
 
+    // Генеруємо щорічні повторення для recurring подій
+    const allEventDates = [];
+    const currentYear = new Date().getFullYear();
+    
+    user.eventDates.forEach(event => {
+      allEventDates.push(event); // Додаємо оригінальну подію
+      
+      // Якщо подія має бути щорічною
+      if (event.isRecurring) {
+        const eventDate = new Date(event.date);
+        const eventYear = eventDate.getFullYear();
+        
+        // Генеруємо події на наступні 10 років
+        for (let year = eventYear + 1; year <= currentYear + 10; year++) {
+          const newDate = new Date(eventDate);
+          newDate.setFullYear(year);
+          
+          const recurringEvent = {
+            ...event.toObject(),
+            _id: `${event._id}_${year}`,
+            date: newDate.toISOString().split('T')[0],
+            formattedDate: newDate.toLocaleDateString('uk-UA', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            }),
+            isGenerated: true // Позначаємо як згенеровану подію
+          };
+          
+          allEventDates.push(recurringEvent);
+        }
+      }
+    });
+
     res.status(200).json({
       success: true,
-      eventDates: user.eventDates
+      eventDates: allEventDates
     });
 
   } catch (error) {
@@ -103,8 +139,15 @@ const deleteEventDate = async (req, res) => {
       });
     }
 
-    // Знаходимо індекс дати для видалення
-    const dateIndex = user.eventDates.findIndex(event => event._id.toString() === dateId);
+    let originalEventId = dateId;
+
+    // Якщо це згенерована подія, знаходимо оригінальну
+    if (dateId.includes('_')) {
+      originalEventId = dateId.split('_')[0];
+    }
+
+    // Знаходимо індекс оригінальної дати для видалення
+    const dateIndex = user.eventDates.findIndex(event => event._id.toString() === originalEventId);
     if (dateIndex === -1) {
       return res.status(404).json({
         success: false,
@@ -112,7 +155,7 @@ const deleteEventDate = async (req, res) => {
       });
     }
 
-    // Видаляємо дату
+    // Видаляємо оригінальну дату (це автоматично видалить усі згенеровані повторення)
     user.eventDates.splice(dateIndex, 1);
     await user.save();
 
@@ -145,8 +188,16 @@ const updateEventDate = async (req, res) => {
       });
     }
 
-    // Знаходимо дату для оновлення
-    const eventDate = user.eventDates.id(dateId);
+    let eventDate;
+    let originalEventId = dateId;
+
+    // Якщо це згенерована подія, знаходимо оригінальну
+    if (dateId.includes('_')) {
+      originalEventId = dateId.split('_')[0];
+    }
+
+    // Знаходимо оригінальну дату для оновлення
+    eventDate = user.eventDates.id(originalEventId);
     if (!eventDate) {
       return res.status(404).json({
         success: false,

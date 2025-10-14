@@ -3,8 +3,6 @@ import { API_URLS } from './api';
 // Функція для збереження дати події в календарі
 export const saveEventDate = async (eventData) => {
   try {
-    console.log('📅 SAVE_EVENT: Збереження події:', eventData);
-    
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Користувач не авторизований');
@@ -25,11 +23,9 @@ export const saveEventDate = async (eventData) => {
     }
 
     const result = await response.json();
-    console.log('✅ SAVE_EVENT: Подію збережено:', result);
     return result;
 
   } catch (error) {
-    console.error('❌ SAVE_EVENT: Помилка збереження події:', error);
     throw error;
   }
 };
@@ -37,8 +33,6 @@ export const saveEventDate = async (eventData) => {
 // Функція для оновлення події
 export const updateEventDate = async (eventId, eventData) => {
   try {
-    console.log('📅 UPDATE_EVENT: Оновлення події:', { eventId, eventData });
-    
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Користувач не авторизований');
@@ -59,11 +53,9 @@ export const updateEventDate = async (eventId, eventData) => {
     }
 
     const result = await response.json();
-    console.log('✅ UPDATE_EVENT: Подію оновлено:', result);
     return result;
 
   } catch (error) {
-    console.error('❌ UPDATE_EVENT: Помилка оновлення події:', error);
     throw error;
   }
 };
@@ -71,8 +63,6 @@ export const updateEventDate = async (eventId, eventData) => {
 // Функція для видалення події
 export const deleteEventDate = async (eventId) => {
   try {
-    console.log('📅 DELETE_EVENT: Видалення події:', eventId);
-    
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Користувач не авторизований');
@@ -91,11 +81,9 @@ export const deleteEventDate = async (eventId) => {
     }
 
     const result = await response.json();
-    console.log('✅ DELETE_EVENT: Подію видалено:', result);
     return result;
 
   } catch (error) {
-    console.error('❌ DELETE_EVENT: Помилка видалення події:', error);
     throw error;
   }
 };
@@ -103,8 +91,6 @@ export const deleteEventDate = async (eventId) => {
 // Функція для отримання всіх подій користувача
 export const getEventDates = async () => {
   try {
-    console.log('📅 GET_EVENTS: Отримання подій користувача');
-    
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('Користувач не авторизований');
@@ -122,11 +108,9 @@ export const getEventDates = async () => {
     }
 
     const result = await response.json();
-    console.log('✅ GET_EVENTS: Події отримано:', result);
     return result;
 
   } catch (error) {
-    console.error('❌ GET_EVENTS: Помилка отримання подій:', error);
     throw error;
   }
 };

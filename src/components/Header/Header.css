@@ -296,3 +296,76 @@
     font-size: 0.9rem;
   }
 }
+
+/* Кнопка навігації для подій */
+.nav-link-button {
+  background: none;
+  border: none;
+  color: #333;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-family: inherit;
+  padding: 0;
+}
+
+.nav-link-button:hover {
+  color: #6a1b9a;
+}
+
+/* Модальне вікно для подій */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: transparent;
+  border-radius: 16px;
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.events-modal {
+  max-width: 650px;
+  width: 100%;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  z-index: 1001;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
