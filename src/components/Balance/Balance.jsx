@@ -92,47 +92,21 @@ const Balance = () => {
       </div>
 
       <div className="balance-content">
-        <div className="tariff-info">
-          <div className="tariff-header">
-            <span className="tariff-label">Ваш тариф та залишок:</span>
+        <div className="tariff-section">
+        
+          <div className="tariff-name">
+            <p className="tariff-title">Тарифний план: <br/>  
+            <span >{userData.tariff || 'Відсутній'}</span></p>
+           
           </div>
           
-          <div className="tariff-card">
-            <div className="tariff-chart">
-              <div className="chart-container">
-                <div className="chart-bars">
-                  <div className="bar bar-1"></div>
-                  <div className="bar bar-2"></div>
-                  <div className="bar bar-3"></div>
-                  <div className="bar bar-4"></div>
-                  <div className="bar bar-5"></div>
-                  <div className="bar bar-6"></div>
-                  <div className="bar bar-7"></div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="tariff-details">
-              <div className="tariff-name">
-                <span className="tariff-title">{userData.tariff}</span>
-                <span className="tariff-badge">Активний</span>
-              </div>
-              
-              <div className="tariff-stats">
-                <div className="stat-item">
-                  <div className="stat-icon coins-icon">🪙</div>
-                  <div className="stat-text">
-                    <span className="stat-number">{userData.coins || 0}</span>
-                    <span className="stat-label">монет</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="balance-card">
+            <div className="balance-label">Ваш баланс:</div>
+            <div className="balance-amount">{userData.coins || 0} монет</div>
           </div>
         </div>
 
-        <div className="balance-info">
-      
+        <div className="balance-actions">
           <button className="top-up-button" onClick={handleTopUpBalance}>
             Поповнити баланс
           </button>

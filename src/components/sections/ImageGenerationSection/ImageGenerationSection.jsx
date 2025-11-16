@@ -113,7 +113,8 @@ const ImageGenerationSection = forwardRef(
       // Перевіряємо авторизацію
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('Для генерації зображення потрібно увійти в акаунт');
+        // Перенаправляємо на реєстрацію якщо користувач не авторизований
+        navigate('/SignUp');
         return;
       }
 
@@ -123,7 +124,14 @@ const ImageGenerationSection = forwardRef(
 
       // Перевіряємо достатність монет
       if (userCoins < coinsRequired) {
-        alert(`Недостатньо монет для генерації зображення. Потрібно ${coinsRequired} монет. У вас: ${userCoins}`);
+        // Перенаправляємо на тарифи якщо баланс нуль або недостатньо монет
+        navigate('/tariffs');
+        return;
+      }
+
+      // Перевіряємо заповненість форми
+      if (!isFormComplete()) {
+        alert('Будь ласка, заповніть необхідні поля: стиль, фото та властивість');
         return;
       }
 
@@ -164,10 +172,11 @@ const ImageGenerationSection = forwardRef(
           throw new Error("Відсутній згенерований промпт");
 
         // Крок 3: Генерація зображення через Replicate
-        const replicateResult = await generateImageReplicate(
-          generateImageData,
+        const replicateResult = await generateImageReplicate({
+          modelId: generateImageData.modelId,
+          input: generateImageData.input,
           isRegeneration // Передаємо інформацію про тип генерації
-        );
+        });
 
         // Обробляємо нову структуру відповіді
         const generatedImageUrlFromReplicate = replicateResult.generatedImageUrl || replicateResult;
@@ -194,7 +203,19 @@ const ImageGenerationSection = forwardRef(
         if (scrollToNextSection) setTimeout(() => scrollToNextSection(), 1000);
       } catch (error) {
         console.error("Помилка генерації зображення:", error);
-        alert(error.message || 'Виникла помилка при генерації зображення. Спробуйте ще раз.');
+        
+        // Перевіряємо чи це помилка про недостатню кількість монет
+        const errorMessage = error.message || '';
+        if (errorMessage.includes('Недостатньо монет') || 
+            errorMessage.includes('недостатньо монет') ||
+            errorMessage.includes('insufficient coins') ||
+            errorMessage.includes('Not enough coins')) {
+          // Перенаправляємо на тарифи
+          navigate('/tariffs');
+          return;
+        }
+        
+        alert(errorMessage || 'Виникла помилка при генерації зображення. Спробуйте ще раз.');
       } finally {
         setIsGenerating(false);
       }
@@ -222,67 +243,188 @@ const ImageGenerationSection = forwardRef(
       if (!generatedImageUrl) return;
 
       const filename = `pryvitai-${Date.now()}.png`;
-      await downloadImage(generatedImageUrl, filename);
+      // await downloadImage(generatedImageUrl, filename);
+            
+      try {
+        // Завантажуємо зображення як blob
+        const response = await fetch(generatedImageUrl);
+        const blob = await response.blob();
+        
+        // Завжди використовуємо пряме завантаження файлу (без Web Share API)
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Очищуємо ресурси
+        window.URL.revokeObjectURL(url);
+        
+        console.log(`✅ Зображення успішно завантажено: ${filename}`);
+      } catch (error) {
+        console.error('❌ Помилка при завантаженні зображення:', error);
+        // Fallback через оригінальну функцію downloadImage
+        await downloadImage(generatedImageUrl, filename);
+      }
+    
+      
+    };
+
+    // Функція для поділитися зображенням
+    const handleShareImage = async () => {
+      if (!generatedImageUrl) return;
+
+      try {
+        // Завантажуємо зображення як blob
+        const response = await fetch(generatedImageUrl);
+        const blob = await response.blob();
+        
+        // Створюємо файл з blob
+        const fileName = `pryvitai-greeting-${Date.now()}.png`;
+        const file = new File([blob], fileName, { type: blob.type });
+
+        // Перевіряємо чи підтримується Web Share API з файлами
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            // Для мобільних пристроїв використовуємо нативне поділитися файлом
+            await navigator.share({
+              title: 'Привітайка від Pryvitai',
+              text: 'Подивіться на цю чудову привітайку, створену за допомогою Pryvitai!',
+              files: [file]
+            });
+            return;
+          } catch (error) {
+            console.error('Помилка при поділитися файлом:', error);
+            // Fallback до завантаження файлу
+          }
+        }
+
+        // Fallback: автоматичне завантаження файлу
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        alert('Файл завантажено! Тепер ви можете поділитися ним через будь-який месенджер або соціальну мережу.');
+        
+      } catch (error) {
+        console.error('Помилка при завантаженні зображення:', error);
+        alert('Помилка при підготовці файлу для поділитися. Спробуйте ще раз.');
+      }
+    };
+
+    // Fallback функція для поділитися (видаляємо, оскільки не потрібна)
+    const fallbackShare = async () => {
+      try {
+        await navigator.clipboard.writeText(generatedImageUrl);
+        alert('Посилання на зображення скопійовано в буфер обміну!');
+      } catch (error) {
+        console.error('Помилка копіювання:', error);
+        // Показуємо модальне вікно з посиланням
+        const shareText = `Подивіться на цю чудову привітайку: ${generatedImageUrl}`;
+        prompt('Скопіюйте посилання для поділитися:', shareText);
+      }
     };
 
     return (
-      <section ref={ref} className="image-generation-section">
-        <div className="generation-controls">
+      <section ref={ref} className="IGS-image-generation-section">
+        {/* Блок статусу кроків */}
+        <div className="IGS-steps-status">
+          <div className={`IGS-step ${formData.cardStyle ? 'IGS-completed' : ''}`}>
+            <span className="IGS-step-icon">✓</span>
+            <span className="IGS-step-text">
+              {formData.cardStyle || 'Оберіть стиль'}
+            </span>
+          </div>
+          <div className={`IGS-step ${formData.photo ? 'IGS-completed' : ''}`}>
+            <span className="IGS-step-icon">✓</span>
+            <span className="IGS-step-text">
+              {formData.photo ? 'Фото додано' : 'Додайте фото однієї людини'}
+            </span>
+          </div>
+          <div className={`IGS-step ${formData.background ? 'IGS-completed' : ''}`}>
+            <span className="IGS-step-icon">✓</span>
+            <span className="IGS-step-text">
+              {formData.background || 'Оберіть фон або доповнення композиції'}
+            </span>
+          </div>
+          <div className="IGS-step IGS-special-step">
+            <span className="IGS-step-icon">🎨</span>
+            <span className="IGS-step-text">Обличчя може трохи змінитись відповідно до стилю</span>
+          </div>
+        </div>
+
+        <div className="IGS-generation-controls">
           <button
             onClick={generateImage}
-            disabled={isGenerating || !isFormComplete() || userCoins < (generatedImageUrl ? 50 : 100)}
-            className={`generate-image-button ${
-              !isFormComplete() || userCoins < (generatedImageUrl ? 50 : 100) ? "disabled" : ""
-            }`}
+            disabled={isGenerating}
+            className={`IGS-generate-image-button ${isGenerating ? "IGS-disabled" : ""}`}
           >
             {isGenerating ? (
               <>
-                <span className="loading-spinner"></span>
-                Генерую привітайку
+                <span className="IGS-loading-spinner"></span>
+                Генерую зображення
               </>
             ) : generatedImageUrl ? (
               "🔄 Генерувати повторно (50 🪙)"
             ) : (
-              "🎨 Згенерувати зображення (100 🪙)"
+              "Згенерувати зображення"
             )}
           </button>
           
-          <div className="coins-info">
-            <span className="coins-count">У вас: {userCoins} 🪙</span>
+          <div className="IGS-coins-info">
+            <span className="IGS-coins-count">У вас: {userCoins} 🪙</span>
             {userCoins < (generatedImageUrl ? 50 : 100) && (
-              <span className="insufficient-coins">
+              <span className="IGS-insufficient-coins">
                 Недостатньо монет для генерації (потрібно {generatedImageUrl ? 50 : 100})
               </span>
             )}
           </div>
         </div>        {isGenerating && (
-          <div className="generation-time-info">
+          <div className="IGS-generation-time-info">
             <p>Генерація займає орієнтовно 2-3 хвилини</p>
           </div>
         )}
 
         {generatedImageUrl && (
-          <div className="final-image-result">
+          <div className="IGS-final-image-result">
             <p>
               <strong>🖼️ Фінальне згенероване зображення:</strong>
             </p>
 
-            <div className="image-preview">
+            <div className="IGS-image-preview">
               <img
                 src={generatedImageUrl}
                 alt="Згенероване зображення"
-                className="preview-image"
+                className="IGS-preview-image"
               />
             </div>
             <p>🌟 Фінальне зображення успішно згенеровано!</p>
 
-            <button onClick={handleDownloadImage} className="download-button">
-              💾 Зберегти привітайку
-            </button>
+            <div className="IGS-action-buttons">
+              <button onClick={handleDownloadImage} className="IGS-action-button IGS-download-btn">
+                <span className="IGS-button-icon">💾</span>
+                Зберегти привітайку
+              </button>
 
-            <button className="edit-button" onClick={handleEditImage}>
-              ✏️ Додати текст привітання
-            </button>
+              <button className="IGS-action-button IGS-edit-btn" onClick={handleEditImage}>
+                <span className="IGS-button-icon">✏️</span>
+                Додати текст привітання
+              </button>
+
+              <button onClick={handleShareImage} className="IGS-action-button IGS-share-btn">
+                <span className="IGS-button-icon">📤</span>
+                Поділитися
+              </button>
+            </div>
           </div>
         )}
       </section>

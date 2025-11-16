@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./GenerateText.css";
 import {
   GenderAgeSection,
@@ -11,8 +11,58 @@ import { useFormData } from "../../utils/formHandlers";
 import { PersonSection } from "../../components/sections/PersonSection/PersonSection";
 import Footer from "../../components/Footer/Footer";
 import Header from "../../components/Header/Header";
+import { useNavigate } from "react-router-dom";
+import SignInModal from "../../components/Registration/SignInModal/SignInModal";
 
 export const GenerateText = () => {
+  const navigate = useNavigate();
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  
+  // Перевірка авторизації при взаємодії з елементами
+  const checkAuthBeforeAction = (callback) => {
+    return (...args) => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsSignInModalOpen(true);
+        return;
+      }
+      return callback(...args);
+    };
+  };
+
+  // Перевірка авторизації при завантаженні сторінки
+  useEffect(() => {
+    const addClickListeners = () => {
+      const interactiveElements = document.querySelectorAll('button, input, textarea, select, [role="button"]');
+      
+      interactiveElements.forEach(element => {
+        const originalOnClick = element.onclick;
+        element.onclick = (e) => {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsSignInModalOpen(true);
+            return false;
+          }
+          if (originalOnClick) {
+            return originalOnClick(e);
+          }
+        };
+      });
+    };
+
+    // Додаємо слухачі після рендерингу
+    const timer = setTimeout(addClickListeners, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleSignInSuccess = () => {
+    setIsSignInModalOpen(false);
+    // Оновлюємо сторінку або виконуємо необхідні дії після успішного входу
+    window.location.reload();
+  };
+
   // refs для секцій у правильному порядку
   const greetingSubjectRef = useRef(null);
   const genderAgeRef = useRef(null);
@@ -43,7 +93,7 @@ export const GenerateText = () => {
   });
 
   // універсальна функція для зміни поля
-  const handleFieldChange = (field, value) => updateField(field, value);
+  const handleFieldChange = checkAuthBeforeAction((field, value) => updateField(field, value));
 
   // функція для скролу до наступної секції
   const createScrollToNextSection = (currentIndex) => () => {
@@ -107,6 +157,11 @@ export const GenerateText = () => {
       />
     </div>
     <Footer/>
+    <SignInModal 
+      isOpen={isSignInModalOpen} 
+      onClose={() => setIsSignInModalOpen(false)}
+      onSuccess={handleSignInSuccess}
+    />
       </div>
   );
 };

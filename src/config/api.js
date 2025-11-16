@@ -2,6 +2,7 @@
 const API_CONFIG = {
   // Базова URL для API запитів - використовуємо HTTP замість HTTPS
   BASE_URL:  'https://vps66716.hyperhost.name:5000/api',
+  
 
   
   // Альтернативні хости для тестування

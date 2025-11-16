@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiBell, FiGift, FiHelpCircle, FiLogOut } from 'react-icons/fi';
+import { FiHelpCircle, FiLogOut, FiMenu } from 'react-icons/fi';
 import './Header.css';
 import logo from '../../images/logo.png';
 import logoText from '../../images/logoText.png';
@@ -12,11 +12,14 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isHelpMenuOpen, setIsHelpMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false); // Стан для меню користувача
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Стан для мобільного меню
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false); // Стан для модального вікна
   const [isEventsModalOpen, setIsEventsModalOpen] = useState(false); // Стан для модального вікна подій
   const [avatar, setAvatar] = useState(''); // Стан для збереження даних профілю
+  const [userName, setUserName] = useState(''); // Стан для імені користувача
   const helpMenuRef = useRef(null);
-  const userMenuRef = useRef(null); 
+  const userMenuRef = useRef(null);
+  const mobileMenuRef = useRef(null); 
   useEffect(() => {
     const checkToken = () => setIsLoggedIn(!!localStorage.getItem('token'));
     checkToken();
@@ -31,12 +34,16 @@ const Header = () => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setIsUserMenuOpen(false);
       }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setIsMobileMenuOpen(false);
+      }
     };
 
     const handleEscapeKey = (event) => {
       if (event.key === 'Escape') {
         setIsEventsModalOpen(false);
         setIsSettingsModalOpen(false);
+        setIsMobileMenuOpen(false);
       }
     };
 
@@ -69,8 +76,8 @@ const Header = () => {
           }
           const data = await res.json();
           if (data && data.user) {
-       
             setAvatar(data.user.avatar || '');
+            setUserName(data.user.name || data.user.email || '');
           }
         } catch (err) {
           console.error('Failed to fetch profile:', err);
@@ -96,6 +103,16 @@ const Header = () => {
    const handleCloseSettings = () => {
     setIsSettingsModalOpen(false);
     window.location.reload(); // Перезавантаження сторінки
+  };
+
+  const handleMobileMenuItemClick = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  // Функція для отримання першої літери імені
+  const getInitials = (name) => {
+    if (!name) return 'U'; // User за замовчуванням
+    return name.charAt(0).toUpperCase();
   };
 
   return (
@@ -130,13 +147,40 @@ const Header = () => {
       <div className="auth-actions">
         {isLoggedIn ? (
           <>
-          {/* Іконки без списку для кращої стилізації */}
-            <Link to="/bonuses" className="header-icon" title="Бонуси та подарунки">
-              <FiGift />
-            </Link>
-            <Link to="/notifications" className="header-icon" title="Сповіщення">
-              <FiBell />
-            </Link>
+            {/* Іконка балансу */}
+            <Link to="/balance" className="header-icon" title="Баланс">
+              <svg width="24" height="24" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M464 128H416V112C416 50.144 365.856 0 304 0H80C35.888 0 0 35.888 0 80V352C0 405.056 43.944 449 97 449H464C485.056 449 502 432.056 502 411V166C502 144.944 485.056 128 464 128ZM80 32H304C348.112 32 384 67.888 384 112V128H97C69.832 128 47.2 142.712 34.744 164.312C32.808 152.184 32 139.4 32 126.4V80C32 52.632 52.632 32 80 32ZM470 411C470 414.312 467.312 417 464 417H97C61.688 417 33 388.312 33 353V192.8C33 174.04 48.24 158.8 67 158.8H464C467.312 158.8 470 161.488 470 164.8V411Z" fill="currentColor"/>
+                <circle cx="384" cy="288" r="24" fill="currentColor"/>
+              </svg>
+            </Link>            {/* Мобільне меню кнопка */}
+            <div className="mobile-menu-container" ref={mobileMenuRef}>
+              <button 
+                className="mobile-menu-toggle"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Відкрити меню"
+              >
+                <FiMenu />
+              </button>
+              
+              {isMobileMenuOpen && (
+                <div className="mobile-dropdown-menu">
+                  <Link to="/calendar" onClick={handleMobileMenuItemClick}>Календар привітань</Link>
+                  <Link to="/tariffs" onClick={handleMobileMenuItemClick}>Тарифи</Link>
+                  <Link to="/actions" onClick={handleMobileMenuItemClick}>Акції</Link>
+                  <Link to="/gallery" onClick={handleMobileMenuItemClick}>Галерея</Link>
+                  <button 
+                    className="mobile-nav-button" 
+                    onClick={() => {
+                      handleMobileMenuItemClick();
+                      setIsEventsModalOpen(true);
+                    }}
+                  >
+                    Події
+                  </button>
+                </div>
+              )}
+            </div>
             
             <div className="help-menu-container" ref={helpMenuRef}>
               <button
@@ -165,18 +209,35 @@ const Header = () => {
            
             <div className="user-menu-container" ref={userMenuRef}>
               <button className="user-avatar-btn" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
-                <img
-              src={avatar || "https://i.pravatar.cc/60"}
-              alt="User Avatar"
-              className="ps-avatar"
-              onError={(e) => { e.currentTarget.src = '/default-avatar.png'; }}
-            />
+                {avatar ? (
+                  <>
+                    <img
+                      src={avatar}
+                      alt="User Avatar"
+                      className="ps-avatar"
+                      onError={(e) => { 
+                        // Якщо аватар не завантажився, ховаємо зображення і показуємо заглушку
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentNode.querySelector('.avatar-initials').style.display = 'flex';
+                      }}
+                    />
+                    <div 
+                      className="avatar-initials" 
+                      style={{ display: 'none' }}
+                    >
+                      {getInitials(userName)}
+                    </div>
+                  </>
+                ) : (
+                  <div className="avatar-initials">
+                    {getInitials(userName)}
+                  </div>
+                )}
               </button>
               {isUserMenuOpen && (
                 <div className="user-dropdown-menu">
                   <Link to="/userpage" onClick={() => setIsUserMenuOpen(false)}>Профіль</Link>
                   <button className="settings-btn" onClick={handleOpenSettings}>Налаштування</button>
-                  <Link to="/balance"  onClick={() => setIsUserMenuOpen(false)}>Баланс</Link>
                  <button title="Вийти" className="logout-btn " onClick={handleLogout}>
               <FiLogOut />Вийти
             </button>

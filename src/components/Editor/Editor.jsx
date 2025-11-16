@@ -13,9 +13,12 @@ const Editor = () => {
 
   // Отримуємо дані з URL параметрів
   const imageUrl = searchParams.get('imageUrl');
-  const text = searchParams.get('text') || '';
+  const rawText = searchParams.get('text') || '';
+  
+  // Видаляємо лапки з початку і кінця тексту
+  const text = rawText.replace(/^["']|["']$/g, '');
 
-  console.log('Editor - отримані дані:', { imageUrl, text });
+  console.log('Editor - отримані дані:', { imageUrl, rawText, cleanedText: text });
 
   useEffect(() => {
     if (!imageUrl) return;
@@ -118,6 +121,9 @@ const Editor = () => {
       alert('Помилка при завантаженні зображення');
     }
   };
+  const handleCreateNew = () => {
+    navigate('/StylizePhotoForPostcard');
+  }
 
   // Допоміжна функція для завантаження blob
   const downloadBlob = (blob) => {
@@ -195,15 +201,6 @@ const Editor = () => {
     }
   };
 
-  // Створити нове зображення
-  const handleCreateNew = () => {
-    navigate("/");
-  };
-
-  // Повернутися назад зі збереженням даних
-  const handleGoBack = () => {
-    navigate("/");
-  };
 
   if (!imageUrl) {
     return (
@@ -220,15 +217,7 @@ const Editor = () => {
 
   return (
     <div className="editor-container">
-      <button onClick={handleGoBack} className="back-button">
-        ←
-      </button>
-      
-      <div className="editor-header">
-        {/* <h2>🎨 Автоматичне додавання тексту виконано</h2> */}
-        {/* <p>Налаштуйте та збережіть вашу привітайку</p> */}
-      </div>
-
+  
       <div className="canvas-container">
         <canvas 
           ref={canvasRef} 
@@ -238,16 +227,12 @@ const Editor = () => {
       </div>
 
       <div className="editor-actions">
-        <button onClick={handleShare} className="action-button share-button">
-          📤 Поділитися
-        </button>
-        
         <button onClick={handleDownload} className="action-button download-button">
-          💾 Завантажити
+          Зберегти привітайку
         </button>
         
-        <button onClick={handleCreateNew} className="action-button create-button">
-          ✨ Створити нове
+        <button onClick={handleShare} className="action-button share-button">
+          Поділитися
         </button>
       </div>
 

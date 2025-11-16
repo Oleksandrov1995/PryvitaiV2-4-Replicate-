@@ -1,7 +1,31 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
 import './TariffQuestions.css';
+import { TarifPlansData } from "../../data/TarifPlansData";
+import { handlePlanSelection } from "../../config/wayforpay";
 
 const TariffQuestions = () => {
+	const navigate = useNavigate();
+
+	// Функція обробки вибору тарифного плану
+	const handlePlanClick = async (planId) => {
+		// Знаходимо план за ID
+		const plan = TarifPlansData.find(p => p.id === planId);
+		if (!plan) {
+			console.error('План не знайдено:', planId);
+			return;
+		}
+
+		// Перевірка авторизації
+		const token = localStorage.getItem('token');
+		if (!token) {
+			navigate('/SignIn');
+			return;
+		}
+
+		// Обробка платежу через WayForPay
+		await handlePlanSelection(plan);
+	};
 	return (
 		<section className="tq-section">
 			<div className="tq-inner">
@@ -13,7 +37,12 @@ const TariffQuestions = () => {
 						настрій до іменин близького оточення та основних календарних свят протягом цілого року. Такі емоції та увага безцінні особливо в такі
 						часи, а з привітайком їх створити ще простіше та неможливо забути про важливе з календарем привітань.
 					</p>
-					<button className="tq-btn">Обрати тариф Річний</button>
+					<button 
+						className="tq-btn"
+						onClick={() => handlePlanClick('yearly')}
+					>
+						Обрати тариф Річний
+					</button>
 				</div>
 
 				{/* Block 2 */}
@@ -24,7 +53,12 @@ const TariffQuestions = () => {
 						вистачає часу, та більше можливостей створити справжні шедеври. Також не забувайте і про себе та подаруйте оригінальні листівки собі
 						найкращому для власних соц.мереж.
 					</p>
-					<button className="tq-btn">Обрати тариф Привітанор</button>
+					<button 
+						className="tq-btn"
+						onClick={() => handlePlanClick('pryvitanator')}
+					>
+						Обрати тариф Привітанатор
+					</button>
 				</div>
 
 				{/* Block 3 */}
@@ -35,7 +69,12 @@ const TariffQuestions = () => {
 						співробітниками. Для креативних особистостей тариф генератор - це простір експериментів для самовираження. Ви можете створювати
 						оригінальні або смішні зображення для власних соцмереж і друзів дуже просто та швидко.
 					</p>
-					<button className="tq-btn">Обрати тариф Генератор</button>
+					<button 
+						className="tq-btn"
+						onClick={() => handlePlanClick('generator')}
+					>
+						Обрати тариф Генератор
+					</button>
 				</div>
 
 			</div>

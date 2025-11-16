@@ -4,6 +4,7 @@ import './Calendar.css';
 import { GenderAgeSection, GreetingSubjectSection } from '../sections';
 import { PersonSection } from '../sections/PersonSection/PersonSection';
 import { saveEventDate, getEventDates, updateEventDate, deleteEventDate } from '../../config/saveEventDate';
+import SignInModal from '../Registration/SignInModal/SignInModal';
 
 const Calendar = () => {
   const navigate = useNavigate();
@@ -44,6 +45,7 @@ const Calendar = () => {
   const [editingEvent, setEditingEvent] = useState(null); // Стан для редагування події
   const [selectedDateEvents, setSelectedDateEvents] = useState([]); // Події для вибраної дати
   const [isTransitioning, setIsTransitioning] = useState(false); // Стан для анімації переходу між місяцями
+  const [showSignInModal, setShowSignInModal] = useState(false); // Стан для модального вікна входу
   
   // Стани для збору даних з форми
   const [formData, setFormData] = useState({
@@ -252,10 +254,32 @@ const Calendar = () => {
   const checkAuthentication = () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/SignIn');
+      setShowSignInModal(true);
       return false;
     }
     return true;
+  };
+
+  // Функція закриття модального вікна входу
+  const closeSignInModal = () => {
+    setShowSignInModal(false);
+  };
+
+  // Обробка успішного входу
+  const handleSignInSuccess = () => {
+    setShowSignInModal(false);
+    // Оновлюємо дати подій після входу
+    const loadEventDates = async () => {
+      try {
+        const response = await getEventDates();
+        if (response.success) {
+          setEventDatesFromDB(response.eventDates);
+        }
+      } catch (error) {
+        console.error('Помилка завантаження дат подій:', error);
+      }
+    };
+    loadEventDates();
   };
 
   // Функції для швидкої навігації
@@ -755,6 +779,13 @@ const Calendar = () => {
           </button>
         </>
       )}
+
+      {/* Модальне вікно входу */}
+      <SignInModal 
+        isOpen={showSignInModal}
+        onClose={closeSignInModal}
+        onSuccess={handleSignInSuccess}
+      />
     </div>
   );
 };

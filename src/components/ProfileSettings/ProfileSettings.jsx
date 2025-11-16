@@ -21,6 +21,12 @@ const ProfileSettings = ({ onClose }) => {
  
   const navigate = useNavigate();
 
+  // Функція для отримання першої літери імені
+  const getInitials = (name) => {
+    if (!name) return 'U'; // User за замовчуванням
+    return name.charAt(0).toUpperCase();
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -168,12 +174,32 @@ const ProfileSettings = ({ onClose }) => {
 
         <section className="ps-main-info">
           <div className="ps-avatar-section">
-            <img
-              src={avatar || "https://i.pravatar.cc/60"}
-              alt="User Avatar"
-              className="ps-avatar"
-              onError={(e) => { e.currentTarget.src = '/default-avatar.png'; }}
-            />
+            <div className="ps-avatar-wrapper">
+              {avatar ? (
+                <>
+                  <img
+                    src={avatar}
+                    alt="User Avatar"
+                    className="ps-avatar"
+                    onError={(e) => { 
+                      // Якщо аватар не завантажився, ховаємо зображення і показуємо заглушку
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.parentNode.querySelector('.ps-avatar-initials').style.display = 'flex';
+                    }}
+                  />
+                  <div 
+                    className="ps-avatar-initials" 
+                    style={{ display: 'none' }}
+                  >
+                    {getInitials(name)}
+                  </div>
+                </>
+              ) : (
+                <div className="ps-avatar-initials">
+                  {getInitials(name)}
+                </div>
+              )}
+            </div>
             <button className="ps-btn ps-btn-outline" type="button" onClick={handleChooseAvatar} disabled={isUploadingAvatar}>
               {isUploadingAvatar ? 'Завантаження...' : 'Замінити фото'}
             </button>

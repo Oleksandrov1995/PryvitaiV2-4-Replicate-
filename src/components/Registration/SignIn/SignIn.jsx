@@ -7,7 +7,7 @@ import './SignIn.css'; // Reusing SignUp styles
 import { API_URLS } from '../../../config/api';
 import logo from '../../../images/logo.png';
 
-const SignIn = () => {
+const SignIn = ({ onSuccess, onClose }) => {
   const [form, setForm] = useState({
     email: '',
     password: ''
@@ -47,7 +47,14 @@ const SignIn = () => {
           localStorage.setItem('token', data.token);
           window.dispatchEvent(new Event('storage'));
         }
-        setTimeout(() => navigate('/'), 1000);
+        
+        setTimeout(() => {
+          if (onSuccess) {
+            onSuccess(); // Викликаємо callback для модального вікна
+          } else {
+            navigate('/'); // Стандартне перенаправлення якщо не модальне вікно
+          }
+        }, 1000);
       }
     } catch (err) {
       setError('Помилка зʼєднання з сервером');
@@ -89,7 +96,12 @@ const SignIn = () => {
       if (data.token) {
         localStorage.setItem('token', data.token);
         window.dispatchEvent(new Event('storage'));
-        navigate('/');
+        
+        if (onSuccess) {
+          onSuccess(); // Викликаємо callback для модального вікна
+        } else {
+          navigate('/'); // Стандартне перенаправлення якщо не модальне вікно
+        }
       } else {
         setError(data.error || 'Помилка Google входу');
       }
@@ -97,7 +109,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="signup-page">
+    
       <div className="signup-container">
         <div className="signup-logo">
           <img src={logo} alt="Pryvitai Logo" style={{ height: '50px' }} />
@@ -106,7 +118,7 @@ const SignIn = () => {
         {!showForgot ? (
           <>
             <h2>Вхід в профіль</h2>
-            <div className="social-login-buttons">
+     
              
         <GoogleOAuthProvider clientId="411952234902-th0g5fji6s9cept1tkqmdn8qj5brivhc.apps.googleusercontent.com">
           <GoogleLogin
@@ -121,7 +133,12 @@ const SignIn = () => {
                   if (data.token) {
                     localStorage.setItem('token', data.token);
                     window.dispatchEvent(new Event('storage'));
-                    navigate('/');
+                    
+                    if (onSuccess) {
+                      onSuccess(); // Викликаємо callback для модального вікна
+                    } else {
+                      navigate('/'); // Стандартне перенаправлення якщо не модальне вікно
+                    }
                   } else {
                     alert(data.error || 'Помилка Google входу');
                   }
@@ -134,10 +151,7 @@ const SignIn = () => {
           />
         </GoogleOAuthProvider>
      
-              <button className="social-btn facebook-btn">
-                <FaFacebookF /> Facebook
-              </button>
-            </div>
+          
 
             <div className="divider">АБО</div>
 
@@ -220,7 +234,7 @@ const SignIn = () => {
           </>
         )}
       </div>
-    </div>
+   
   );
 };
 

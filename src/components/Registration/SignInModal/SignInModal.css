@@ -1,0 +1,64 @@
+.signin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.signin-modal-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  width: 90%;
+}
+
+.signin-modal-header {
+  background: linear-gradient(135deg, #8B5CF6, #A855F7);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.signin-modal-content {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.signin-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  z-index: 1001;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.signin-modal-close:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}

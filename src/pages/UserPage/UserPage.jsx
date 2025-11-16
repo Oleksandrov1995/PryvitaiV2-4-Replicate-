@@ -1,3 +1,4 @@
+import MainButtons from "../../butttons/mainButtons/MainButtons";
 import Footer from "../../components/Footer/Footer";
 import Gallery from "../../components/Gallery/Gallery";
 import Header from "../../components/Header/Header";
@@ -7,6 +8,7 @@ const UserPage = () => {
     <div>
       <Header/>
       <User/>
+      <MainButtons/>
       <Gallery/>
       <Footer/>
       </div>

@@ -27,7 +27,15 @@ const userSchema = new mongoose.Schema({
   },
   coins: {
     type: Number,
-    default: 300
+    default: 0
+  },
+  hasReceivedWelcomeBonus: {
+    type: Boolean,
+    default: false
+  },
+  processedPayments: {
+    type: [String],
+    default: []
   },
   eventDates: {
     type: [{

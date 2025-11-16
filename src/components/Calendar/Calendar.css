@@ -1,6 +1,6 @@
 .calendar-container {
   max-width: 500px;
-  margin: 0 auto;
+  margin: 50px auto 100px auto;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -75,6 +75,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  
 }
 
 .quick-nav-icon {
@@ -535,6 +536,7 @@
   cursor: pointer;
   width: 100%;
   transition: background 0.2s ease;
+  
 }
 
 .add-new-event-button:hover {
@@ -648,7 +650,7 @@
 @media (max-width: 480px) {
   .calendar-container {
     padding: 16px;
-    margin: 16px;
+    margin: 50px 16px;
   }
   
   .calendar-title {

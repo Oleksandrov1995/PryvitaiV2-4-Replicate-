@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -19,61 +19,109 @@ import { StylizePhotoForPostcardApiSetting } from "../../prompts/replicate/Styli
 import { PersonSection } from "../../components/sections/PersonSection/PersonSection";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import SignInModal from "../../components/Registration/SignInModal/SignInModal";
 
 export const StylizePhotoForPostcard = () => {
   const [showGreeting, setShowGreeting] = React.useState(false);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState("");
+  const [generatedPrompt, setGeneratedPrompt] = useState("");
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const navigate = useNavigate();
 
- const [generatedImageUrl, setGeneratedImageUrl] = useState("");
- const [generatedPrompt, setGeneratedPrompt] = useState("");
- const navigate = useNavigate();
+  // Перевірка авторизації при взаємодії з елементами
+  const checkAuthBeforeAction = (callback) => {
+    return (...args) => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsSignInModalOpen(true);
+        return;
+      }
+      return callback(...args);
+    };
+  };
 
-  const handleShowGreeting = () => {
+  // Перевірка авторизації при завантаженні сторінки
+  useEffect(() => {
+    const addClickListeners = () => {
+      const interactiveElements = document.querySelectorAll('button, input, textarea, select, [role="button"]');
+      
+      interactiveElements.forEach(element => {
+        const originalOnClick = element.onclick;
+        element.onclick = (e) => {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsSignInModalOpen(true);
+            return false;
+          }
+          if (originalOnClick) {
+            return originalOnClick(e);
+          }
+        };
+      });
+    };
+
+    // Додаємо слухачі після рендерингу
+    const timer = setTimeout(addClickListeners, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleSignInSuccess = () => {
+    setIsSignInModalOpen(false);
+    // Оновлюємо сторінку або виконуємо необхідні дії після успішного входу
+    window.location.reload();
+  };
+
+  const handleShowGreeting = checkAuthBeforeAction(() => {
     setShowGreeting(true);
     // scroll to greeting block after it becomes visible
     setTimeout(() => {
-      const target = sectionRefs[5]?.current; // greetingTextRef index in sectionRefs
+      const target = sectionRefs[4]?.current; // greetingSubjectRef index in sectionRefs
       if (target && typeof target.scrollIntoView === "function")
         target.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
-  };
+  });
 
-   const handleImageGenerated = (key, value) => {
-   if (!key) return;
-   if (key === "finalGeneratedImageUrl" || key === "imageUrl") {
-     setGeneratedImageUrl(value);
-   }
-   if (key === "generatedImagePrompt") {
-     setGeneratedPrompt(value);
-   }
- };
+  const handleImageGenerated = checkAuthBeforeAction((key, value) => {
+    console.log('StylizePhotoForPostcard - handleImageGenerated:', { key, value });
+    if (!key) return;
+    if (key === "finalGeneratedImageUrl" || key === "imageUrl") {
+      setGeneratedImageUrl(value);
+      console.log('StylizePhotoForPostcard - встановлено generatedImageUrl:', value);
+    }
+    if (key === "generatedImagePrompt") {
+      setGeneratedPrompt(value);
+    }
+  });
 
   // Ref для доступу до функції generateImage з ImageGenerationSection
   const generateImageRef = useRef(null);
 
   // Створюємо refs для кожної секції
   const styleRef = useRef(null);
-  const moodRef = useRef(null);
-  const backgroundsRef = useRef(null);
   const photoRef = useRef(null);
-  const genderAgeRef = useRef(null);
-  const hobbiesRef = useRef(null);
-  const greetingTextRef = useRef(null);
-  const greetingSubjectRef = useRef(null);
-  const traitsRef = useRef(null);
+  const backgroundsRef = useRef(null);
   const imageGenerationRef = useRef(null);
+  const greetingSubjectRef = useRef(null);
+  const genderAgeRef = useRef(null);
+  const personRef = useRef(null);
+  const hobbiesRef = useRef(null);
+  const traitsRef = useRef(null);
+  const greetingTextRef = useRef(null);
 
-  // Масив refs для зручності навігації
+  // Масив refs для зручності навігації (в порядку відображення на сторінці)
   const sectionRefs = [
-    styleRef,
-    moodRef,
-    backgroundsRef,
-    photoRef,
-    genderAgeRef,
-    hobbiesRef,
-    greetingSubjectRef,
-    traitsRef,
-    greetingTextRef,
-    imageGenerationRef,
+    styleRef,           // 0 - CardStyleSection
+    photoRef,           // 1 - PhotoSection  
+    backgroundsRef,     // 2 - BackgroundsSection
+    imageGenerationRef, // 3 - ImageGenerationSection
+    greetingSubjectRef, // 4 - GreetingSubjectSection (показується після onShowGreeting)
+    genderAgeRef,       // 5 - GenderAgeSection
+    personRef,          // 6 - PersonSection  
+    hobbiesRef,         // 7 - HobbiesSection
+    traitsRef,          // 8 - TraitsSection
+    greetingTextRef,    // 9 - GreetingTextSection
   ];
 
   const { formData, updateField } = useFormData({
@@ -91,16 +139,24 @@ export const StylizePhotoForPostcard = () => {
     imageUrl: "",
   });
 
-  const handleFieldChange = (field, value) => {
+  const handleFieldChange = checkAuthBeforeAction((field, value) => {
     updateField(field, value);
-  };
+  });
 
   // Функція для скролу до наступної секції
   const createScrollToNextSection = (currentIndex) => {
     return () => {
       const nextIndex = currentIndex + 1;
+      
+      // Якщо досягли кінця секцій, не скролимо
+      if (nextIndex >= sectionRefs.length) {
+        console.log("Досягнуто кінця секцій");
+        return;
+      }
+      
       const next = sectionRefs[nextIndex]?.current;
-      console.log("scroll target", next, typeof next?.scrollIntoView);
+      console.log(`Скрол від секції ${currentIndex} до секції ${nextIndex}`, next, typeof next?.scrollIntoView);
+      
       if (next && typeof next.scrollIntoView === "function") {
         next.scrollIntoView({
           behavior: "smooth",
@@ -133,7 +189,7 @@ export const StylizePhotoForPostcard = () => {
       <PhotoSection
         ref={photoRef}
         onPhotoChange={handleFieldChange}
-        scrollToNextSection={createScrollToNextSection(3)}
+        scrollToNextSection={createScrollToNextSection(1)}
       />
 
       <BackgroundsSection
@@ -148,60 +204,58 @@ export const StylizePhotoForPostcard = () => {
         formData={formData}
         generateImageData={StylizePhotoForPostcardApiSetting(formData)}
         generateImageRef={generateImageRef}
-        scrollToNextSection={createScrollToNextSection(9)}
+        scrollToNextSection={createScrollToNextSection(3)}
         onShowGreeting={handleShowGreeting}
         onImageGenerated={handleImageGenerated}
       />
       {showGreeting && (
         <div className="greeting-subject-section">
           <GreetingSubjectSection
-            ref={sectionRefs[0]}
+            ref={greetingSubjectRef}
             onSubjectChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(0)}
+            scrollToNextSection={createScrollToNextSection(4)}
           />
           <GenderAgeSection
-            ref={sectionRefs[1]}
+            ref={genderAgeRef}
             onGenderChange={handleFieldChange}
             onAgeChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(1)}
+            scrollToNextSection={createScrollToNextSection(5)}
           />
           <PersonSection
-            ref={sectionRefs[2]}
+            ref={personRef}
             onPersonChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(2)}
+            scrollToNextSection={createScrollToNextSection(6)}
             selectedGender={formData.gender}
           />
           <HobbiesSection
-            ref={sectionRefs[3]}
+            ref={hobbiesRef}
             onHobbyChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(3)}
+            scrollToNextSection={createScrollToNextSection(7)}
           />
           <TraitsSection
-            ref={sectionRefs[4]}
+            ref={traitsRef}
             onTraitChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(4)}
+            scrollToNextSection={createScrollToNextSection(8)}
           />
 
           <GreetingTextSection
-            ref={sectionRefs[5]}
+            ref={greetingTextRef}
             onTextChange={handleFieldChange}
             formData={formData}
-            scrollToNextSection={createScrollToNextSection(5)}
+            generatedImageUrl={generatedImageUrl}
+            navigate={navigate}
+            scrollToNextSection={createScrollToNextSection(9)}
           />
-            <button onClick={() => {
-       // take confirmed text (prefer formData.greetingText) and generated image url
-       const text = (formData && formData.greetingText) ? formData.greetingText : "";
-       if (!generatedImageUrl) {
-         alert("Спочатку згенеруйте зображення.");
-         return;
-       }
-       const params = new URLSearchParams({ imageUrl: generatedImageUrl, text });
-       navigate(`/editor?${params.toString()}`);
-     }}>Створити листівку</button>
         </div>
       )}
     
     </div>
-   <Footer /></div>
+   <Footer />
+   <SignInModal 
+     isOpen={isSignInModalOpen}
+     onClose={() => setIsSignInModalOpen(false)}
+     onSuccess={handleSignInSuccess}
+   />
+   </div>
   );
 };

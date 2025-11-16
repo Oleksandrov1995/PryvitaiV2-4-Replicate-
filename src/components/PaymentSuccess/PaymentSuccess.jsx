@@ -4,25 +4,11 @@ import './PaymentSuccess.css';
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
-  const [countdown, setCountdown] = useState(5);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prevCount) => {
-        if (prevCount <= 1) {
-          clearInterval(timer);
-          navigate('/profile');
-          return 0;
-        }
-        return prevCount - 1;
-      });
-    }, 1000);
 
-    return () => clearInterval(timer);
-  }, [navigate]);
 
   const handleGoToProfile = () => {
-    navigate('/profile');
+    navigate('/');
   };
 
   const handleCreateGreeting = () => {
@@ -51,11 +37,11 @@ const PaymentSuccess = () => {
         </div>
         
         <h1 className="success-title">
-          Платіж успішно завершено!
+          Дякуємо за покупку! 
         </h1>
         
         <div className="success-message">
-          Дякуємо за покупку! Ваші монети вже нараховані на рахунок.
+          Ваші монети будуть нараховані на рахунок як тільки платіж буде підтверджено ( близько 5 хвилин ).
         </div>
         
         <div className="button-group">
@@ -63,7 +49,7 @@ const PaymentSuccess = () => {
             className="btn-primary"
             onClick={handleGoToProfile}
           >
-            Перейти до профілю
+            Перейти на головну
           </button>
           
           <button 
@@ -74,9 +60,6 @@ const PaymentSuccess = () => {
           </button>
         </div>
         
-        <div className="auto-redirect">
-          Автоматичне перенаправлення через {countdown} секунд...
-        </div>
       </div>
     </div>
   );

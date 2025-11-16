@@ -12,6 +12,16 @@ const wayforpayConfig = {
   paymentErrorUrl: process.env.PAYMENT_ERROR_URL
 };
 
+// Set для зберігання оброблених транзакцій
+const processedTransactions = new Set();
+
+// Очищення старих записів кожні 24 години
+setInterval(() => {
+  console.log(`🧹 Очищення processedTransactions: було ${processedTransactions.size} записів`);
+  processedTransactions.clear();
+  console.log(`✅ processedTransactions очищено`);
+}, 24 * 60 * 60 * 1000); // 24 години
+
 // Функція для генерації підпису WayForPay
 const generateSignature = (data, secretKey) => {
   const signString = Object.values(data).join(';');
@@ -193,6 +203,23 @@ const handleCallback = async (req, res) => {
 
     console.log('✅ CALLBACK: Підпис перевірено успішно');
 
+    // Створюємо унікальний ідентифікатор транзакції
+    const transactionId = `${orderReference}_${transactionStatus}_${amount}`;
+    
+    // Перевіряємо, чи не оброблена вже ця транзакція
+    if (processedTransactions.has(transactionId)) {
+      console.log(`⚠️ CALLBACK: Транзакція ${transactionId} вже була оброблена раніше, пропускаємо`);
+      return res.json({
+        orderReference,
+        status: 'accept',
+        time: Math.floor(Date.now() / 1000)
+      });
+    }
+
+    // Додаємо транзакцію до оброблених
+    processedTransactions.add(transactionId);
+    console.log(`🔒 CALLBACK: Транзакція ${transactionId} позначена як оброблена`);
+
     // Якщо платіж успішний
     if (transactionStatus === 'Approved') {
       const User = require('../models/User');
@@ -279,14 +306,45 @@ const handleCallback = async (req, res) => {
         try {
           console.log(`🔄 CALLBACK: Оновлення користувача ${userId}...`);
           
+          // Спочатку перевіряємо, чи не був вже оброблений цей платіж на рівні БД
+          const user = await User.findById(userId);
+          if (!user) {
+            console.error(`❌ CALLBACK: Користувача з ID ${userId} не знайдено`);
+            return res.json({
+              orderReference,
+              status: 'accept',
+              time: Math.floor(Date.now() / 1000)
+            });
+          }
+
+          // Перевіряємо, чи не оброблявся вже цей платіж
+          if (user.processedPayments && user.processedPayments.includes(orderReference)) {
+            console.log(`⚠️ CALLBACK: Платіж ${orderReference} вже був оброблений для користувача ${userId}`);
+            return res.json({
+              orderReference,
+              status: 'accept',
+              time: Math.floor(Date.now() / 1000)
+            });
+          }
+          
           const updatedUser = await User.findByIdAndUpdate(
             userId, 
             { 
               $inc: { coins: coinsToAdd },
-              $set: { tariff: tariffName }
+              $set: { tariff: tariffName },
+              $addToSet: { processedPayments: orderReference }
             },
             { new: true } // Повертає оновлений документ
           );
+
+          // Обмежуємо кількість збережених платежів (зберігаємо тільки останні 100)
+          if (updatedUser.processedPayments && updatedUser.processedPayments.length > 100) {
+            await User.findByIdAndUpdate(
+              userId,
+              { $set: { processedPayments: updatedUser.processedPayments.slice(-100) } }
+            );
+            console.log(`🧹 CALLBACK: Очищено старі платежі для користувача ${userId}`);
+          }
           
           if (updatedUser) {
             console.log(`✅ CALLBACK: Платіж успішно оброблено:`);

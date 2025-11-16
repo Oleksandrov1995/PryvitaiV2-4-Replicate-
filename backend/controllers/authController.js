@@ -3,8 +3,46 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
+const UsedEmail = require('../models/UsedEmail');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
+const WELCOME_BONUS = 100; // Початковий бонус для нових користувачів
+
+// Функція для перевірки та нарахування початкового бонусу
+const checkAndGrantWelcomeBonus = async (user, email, registrationType, ipAddress = null) => {
+  try {
+    // Перевіряємо чи вже отримував бонус цей користувач
+    if (user.hasReceivedWelcomeBonus) {
+      return false;
+    }
+
+    // Перевіряємо чи використовувався цей email раніше
+    const existingEmail = await UsedEmail.findOne({ email: email.toLowerCase() });
+    if (existingEmail) {
+      console.log(`Email ${email} вже використовувався для отримання бонусу`);
+      return false;
+    }
+
+    // Нараховуємо бонус
+    user.coins += WELCOME_BONUS;
+    user.hasReceivedWelcomeBonus = true;
+    await user.save();
+
+    // Зберігаємо email як використаний
+    const usedEmail = new UsedEmail({
+      email: email.toLowerCase(),
+      registrationType,
+      ipAddress
+    });
+    await usedEmail.save();
+
+    console.log(`Нараховано ${WELCOME_BONUS} монет користувачу ${email}`);
+    return true;
+  } catch (error) {
+    console.error('Помилка при нарахуванні початкового бонусу:', error);
+    return false;
+  }
+};
 
 // Google OAuth endpoint
 exports.googleAuth = async (req, res) => {
@@ -18,14 +56,24 @@ exports.googleAuth = async (req, res) => {
     const payload = ticket.getPayload();
     const email = payload.email;
     const name = payload.name || email.split('@')[0];
+    const ipAddress = req.ip || req.connection.remoteAddress;
+    
     let user = await User.findOne({ email });
+    let isNewUser = false;
+    
     if (!user) {
-      // Створюємо користувача через Google з дефолтними значеннями
-      // tariff: 'Без тарифу', coins: 300
+      // Створюємо користувача через Google
       user = new User({ name, email, password: '' });
       await user.save();
+      isNewUser = true;
     }
-    const token = jwt.sign({ userId: user._id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '2h' });
+
+    // Перевіряємо та нараховуємо початковий бонус
+    if (isNewUser || !user.hasReceivedWelcomeBonus) {
+      await checkAndGrantWelcomeBonus(user, email, 'google', ipAddress);
+    }
+
+    const token = jwt.sign({ userId: user._id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '35d' });
     res.json({ message: 'Вхід через Google успішний!', token });
   } catch (err) {
     console.error('Google auth error:', err);
@@ -107,17 +155,24 @@ exports.register = async (req, res) => {
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Всі поля обовʼязкові.' });
   }
+  
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     return res.status(400).json({ error: 'Користувач з таким email вже існує.' });
   }
+  
   const hashedPassword = await bcrypt.hash(password, 10);
-  // Створюємо користувача з дефолтними значеннями
-  // tariff: 'Без тарифу', coins: 300
+  const ipAddress = req.ip || req.connection.remoteAddress;
+  
+  // Створюємо користувача
   const user = new User({ name, email, password: hashedPassword });
   await user.save();
+
+  // Перевіряємо та нараховуємо початковий бонус
+  await checkAndGrantWelcomeBonus(user, email, 'regular', ipAddress);
+  
   // Генеруємо токен (включаємо name для відображення на фронтенді)
-  const token = jwt.sign({ userId: user._id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '2h' });
+  const token = jwt.sign({ userId: user._id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '35d' });
   res.json({ message: 'Реєстрація успішна!', token });
 };
 
@@ -136,7 +191,7 @@ exports.login = async (req, res) => {
     return res.status(400).json({ error: 'Невірний пароль.' });
   }
   // Генеруємо токен
-  const token = jwt.sign({ userId: user._id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '2h' });
+  const token = jwt.sign({ userId: user._id, email: user.email, name: user.name }, JWT_SECRET, { expiresIn: '35d' });
   res.json({ message: 'Вхід успішний!', token });
 };
 

@@ -22,6 +22,16 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Збільшуємо ліміт для завантаження зображень
 app.use(express.urlencoded({ extended: true })); // Додаємо підтримку form-encoded даних для WayForPay
 
+// Middleware для отримання справжньої IP адреси
+app.use((req, res, next) => {
+  req.ip = req.headers['x-forwarded-for'] || 
+           req.headers['x-real-ip'] || 
+           req.connection.remoteAddress || 
+           req.socket.remoteAddress ||
+           (req.connection.socket ? req.connection.socket.remoteAddress : null);
+  next();
+});
+
 // Логування запитів
 app.use(requestLogger);
 

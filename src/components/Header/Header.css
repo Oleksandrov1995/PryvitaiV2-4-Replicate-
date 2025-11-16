@@ -96,17 +96,19 @@
 .header-icon {
   background-color: #f0e8fd;
   border-radius: 8px;
-  padding: 8px;
+  padding: 0;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem; /* Повертаємо розмір, бо кнопка його скидає */
-  display: flex; /* Для вирівнювання */
- 
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem; /* Розмір іконки */
-  color: #555;
-  transition: color 0.2s ease;
+  font-size: 16px;
+  color: #6a1b9a;
+  transition: all 0.2s ease;
+  width: 40px;
+  height: 40px;
+  text-decoration: none;
+  line-height: 1;
 }
 
 .header-icon:hover {
@@ -178,6 +180,26 @@
 
 .user-avatar-btn:hover img {
   border-color: #8E44EE;
+}
+
+.avatar-initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7F55E0 0%, #6A3CBE 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ddd;
+  transition: all 0.2s;
+}
+
+.user-avatar-btn:hover .avatar-initials {
+  border-color: #8E44EE;
+  transform: scale(1.05);
 }
 
 .user-dropdown-menu {
@@ -256,17 +278,104 @@
 
 
 /* Адаптивність */
-@media (max-width: 860px) {
+/* Мобільне меню */
+.mobile-menu-container {
+  display: none;
+  position: relative;
+}
+
+.mobile-menu-toggle {
+  background-color: #f0e8fd;
+  border-radius: 8px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #6a1b9a;
+  transition: all 0.2s ease;
+  width: 40px;
+  height: 40px;
+}
+
+.mobile-menu-toggle:hover {
+  background-color: #e8d9fa;
+  color: #8E44EE;
+}
+
+.mobile-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  min-width: 350px;
+  z-index: 1000;
+  margin-top: 8px;
+}
+
+.mobile-dropdown-menu a,
+.mobile-nav-button {
+  display: block;
+  padding: 12px 16px;
+  color: #333;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.mobile-dropdown-menu a:hover,
+.mobile-nav-button:hover {
+  background-color: #f5f5f5;
+  color: #6a1b9a;
+}
+
+/* Більші кнопки для десктопних пристроїв */
+@media (min-width: 901px) {
+  .header-icon,
+  .mobile-menu-toggle {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+  
+  .user-avatar-btn img {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (max-width: 900px) {
   .header-nav,
   .calendar-btn {
-    display: none; /* Сховаємо навігацію та кнопку календаря на малих екранах */
+    display: none;
   }
+  
+  .mobile-menu-container {
+    display: block;
+  }
+  
+  .header {
+    position: relative;
+  }
+  
 }
 
 @media (max-width: 768px) {
   .header {
     padding: 10px 16px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: space-between;
   }
 
@@ -276,6 +385,11 @@
 
   .auth-actions {
     gap: 10px;
+  }
+  
+  .mobile-dropdown-menu {
+    right: 0;
+    min-width: 180px;
   }
 }
 
@@ -294,6 +408,20 @@
 
   .auth-actions a {
     font-size: 0.9rem;
+  }
+  
+  .mobile-dropdown-menu {
+    right: 0;
+    min-width: 160px;
+    max-width: calc(100vw - 24px);
+  }
+  
+  .header-logo img {
+    height: 40px !important;
+  }
+  
+  .header-logo img:last-child {
+    height: 32px !important;
   }
 }
 

@@ -3,9 +3,10 @@ import SignIn from '../../../components/Registration/SignIn/SignIn';
 const SignInPage = () => {
 
   return (
-    <div>
+    
+      <div className="signup-page">
       <SignIn/>
-    </div>
+  </div>
   );
 };
 

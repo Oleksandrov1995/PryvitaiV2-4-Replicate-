@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaGoogle, FaFacebookF } from 'react-icons/fa';
+
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import './SignUp.css';
 import { API_URLS } from '../../../config/api';
@@ -92,7 +92,7 @@ const SignUp = () => {
         </div>
         <h2>Створіть профіль</h2>
 
-        <div className="social-login-buttons">
+       
        
         <GoogleOAuthProvider clientId="411952234902-th0g5fji6s9cept1tkqmdn8qj5brivhc.apps.googleusercontent.com">
           <GoogleLogin
@@ -120,10 +120,7 @@ const SignUp = () => {
           />
         </GoogleOAuthProvider>
      
-          <button className="social-btn facebook-btn">
-            <FaFacebookF /> Facebook
-          </button>
-        </div>
+       
 
         <div className="divider">АБО</div>
 

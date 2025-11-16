@@ -5,6 +5,8 @@ import { API_URLS } from '../../config/api';
 import { FiSettings, FiEdit2, FiImage } from 'react-icons/fi';
 import { LuSparkles } from 'react-icons/lu';
 import ProfileSettings from '../ProfileSettings/ProfileSettings';
+import Events from '../Events/Events';
+import { getEventDates } from '../../config/saveEventDate';
 
 const User = () => {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ const User = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const [isEventsModalOpen, setIsEventsModalOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -50,7 +53,17 @@ const User = () => {
             } catch (_) { /* silent */ }
           }
 
-          setStats({ photos: photosCount, events: 0 });
+          // Fetch events count from eventDates (only original events, not generated recurring)
+          let eventsCount = 0;
+          try {
+            const eventDatesData = await getEventDates();
+            if (eventDatesData && Array.isArray(eventDatesData.eventDates)) {
+              // Рахуємо тільки оригінальні події (без isGenerated: true)
+              eventsCount = eventDatesData.eventDates.filter(event => !event.isGenerated).length;
+            }
+          } catch (_) { /* silent */ }
+
+          setStats({ photos: photosCount, events: eventsCount });
         }
       } catch (err) {
         setError('Не вдалося завантажити профіль');
@@ -62,6 +75,12 @@ const User = () => {
     fetchData();
   }, [navigate]);
 
+  // Функція для отримання першої літери імені
+  const getInitials = (name) => {
+    if (!name || name === '—') return 'U'; // User за замовчуванням
+    return name.charAt(0).toUpperCase();
+  };
+
   if (loading) return <div className="user-hero loading">Завантаження...</div>;
   if (error) return <div className="user-hero error">{error}</div>;
 
@@ -71,27 +90,103 @@ const User = () => {
       <div className="user-hero-inner">
         <div className="user-hero-actions-top">
           <button className="uh-icon-btn" onClick={() => setShowSettings(true)} title="Налаштування"><FiSettings /></button>
-          <button className="uh-icon-btn" title="Редагувати профіль"><FiEdit2 /></button>
-          <button className="uh-icon-btn" title="Завантажити фото"><FiImage /></button>
+         
         </div>
 
         <div className="user-avatar-wrapper">
-          <img className="user-avatar" src={profile.avatar} alt={profile.name} onError={(e)=>{e.currentTarget.src='https://i.pravatar.cc/70';}} />
+          {profile.avatar && profile.avatar !== '/default-avatar.png' ? (
+            <>
+              <img 
+                className="user-avatar" 
+                src={profile.avatar} 
+                alt={profile.name} 
+                onError={(e) => {
+                  // Якщо аватар не завантажився, ховаємо зображення і показуємо заглушку
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentNode.querySelector('.user-avatar-initials').style.display = 'flex';
+                }}
+              />
+              <div 
+                className="user-avatar-initials" 
+                style={{ display: 'none' }}
+              >
+                {getInitials(profile.name)}
+              </div>
+            </>
+          ) : (
+            <div className="user-avatar-initials">
+              {getInitials(profile.name)}
+            </div>
+          )}
         </div>
         <h1 className="user-name">{profile.name}</h1>
-        <p className="user-tagline">{profile.tagline}</p>
+      
 
         <div className="user-stats">
-          <div className="user-stat"><span className="val">{stats.photos}</span><span className="label">Photos</span></div>
-         </div>
-
-        <div className="user-primary-actions">
-          <button className="user-action-btn"><FiImage /> Greetings Calendar</button>
-          <button className="user-action-btn"><FiEdit2 /> Event List</button>
-          <button className="user-action-btn"><LuSparkles /> Generate Greetings</button>
+          <button 
+            className="user-stat clickable"
+            onClick={() => navigate('/gallery')}
+          >
+            <span className="val">{stats.photos}</span>
+            <span className="label">Фото</span>
+          </button>
+          <button 
+            className="user-stat clickable"
+            onClick={() => setIsEventsModalOpen(true)}
+          >
+            <span className="val">{stats.events}</span>
+            <span className="label">Подій</span>
+          </button>
         </div>
+
+        <div className="user-navigation-buttons">
+          <button 
+            className="nav-button calendar-btn"
+            onClick={() => navigate('/calendar')}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5C21 3.9 20.1 3 19 3zM19 19H5V8h14V19z"/>
+            </svg>
+            Календар привітань
+          </button>
+          
+          <button 
+            className="nav-button events-btn"
+            onClick={() => setIsEventsModalOpen(true)}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+            </svg>
+            Події
+          </button>
+          
+          <button 
+            className="nav-button generate-btn"
+            onClick={() => navigate('/StylizePhotoForPostcard')}
+          >
+            <LuSparkles />
+            Згенерувати привітання
+          </button>
+        </div>
+
+   
       </div>
       {showSettings && <ProfileSettings onClose={() => setShowSettings(false)} />}
+      
+      {/* Модалка подій */}
+      {isEventsModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsEventsModalOpen(false)}>
+          <div className="modal-content events-modal" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="modal-close-btn"
+              onClick={() => setIsEventsModalOpen(false)}
+            >
+              ×
+            </button>
+            <Events />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
