@@ -92,12 +92,13 @@ export const optionsHobbies = [
 export const cardStyleOptions = [
   "Мультяшний",
   "Акварель",
+  "Line-art",
   "Масляний",
   "Вінтаж",
   "Аніме",
   "Піксель",
   "Поп-арт",
-  "Line-art",
+  
   "Журнальний",
   "Ляльковий",
   "Барбі",

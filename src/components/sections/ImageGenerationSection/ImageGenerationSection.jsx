@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "./ImageGenerationSection.css";
 import { uploadPhoto } from "../../../config/uploadPhoto";
 import { generateImagePrompt } from "../../../config/generateImagePrompt";
-import { downloadImage } from "../../../utils/downloadImage";
 import { generateImageReplicate } from "../../../config/generateImageReplicate";
+import { shareImage } from "../../../utils/shareUtils";
+import { downloadImageFromUrl } from "../../../utils/downloadUtils";
 
 import { StylizePhotoForPostcardApiSetting } from "../../../prompts/replicate/StylizePhotoForPostcardPrompt";
 import { createPromptFluxKontextPro } from "../../../prompts/replicate/StylizePhotoForPostcardPrompt";
@@ -243,96 +244,17 @@ const ImageGenerationSection = forwardRef(
       if (!generatedImageUrl) return;
 
       const filename = `pryvitai-${Date.now()}.png`;
-      // await downloadImage(generatedImageUrl, filename);
-            
-      try {
-        // Завантажуємо зображення як blob
-        const response = await fetch(generatedImageUrl);
-        const blob = await response.blob();
-        
-        // Завжди використовуємо пряме завантаження файлу (без Web Share API)
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.style.display = 'none';
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Очищуємо ресурси
-        window.URL.revokeObjectURL(url);
-        
-        console.log(`✅ Зображення успішно завантажено: ${filename}`);
-      } catch (error) {
-        console.error('❌ Помилка при завантаженні зображення:', error);
-        // Fallback через оригінальну функцію downloadImage
-        await downloadImage(generatedImageUrl, filename);
-      }
-    
-      
+      await downloadImageFromUrl(generatedImageUrl, filename);
     };
 
     // Функція для поділитися зображенням
     const handleShareImage = async () => {
       if (!generatedImageUrl) return;
-
-      try {
-        // Завантажуємо зображення як blob
-        const response = await fetch(generatedImageUrl);
-        const blob = await response.blob();
-        
-        // Створюємо файл з blob
-        const fileName = `pryvitai-greeting-${Date.now()}.png`;
-        const file = new File([blob], fileName, { type: blob.type });
-
-        // Перевіряємо чи підтримується Web Share API з файлами
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            // Для мобільних пристроїв використовуємо нативне поділитися файлом
-            await navigator.share({
-              title: 'Привітайка від Pryvitai',
-              text: 'Подивіться на цю чудову привітайку, створену за допомогою Pryvitai!',
-              files: [file]
-            });
-            return;
-          } catch (error) {
-            console.error('Помилка при поділитися файлом:', error);
-            // Fallback до завантаження файлу
-          }
-        }
-
-        // Fallback: автоматичне завантаження файлу
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        
-        alert('Файл завантажено! Тепер ви можете поділитися ним через будь-який месенджер або соціальну мережу.');
-        
-      } catch (error) {
-        console.error('Помилка при завантаженні зображення:', error);
-        alert('Помилка при підготовці файлу для поділитися. Спробуйте ще раз.');
-      }
+      
+      await shareImage({ url: generatedImageUrl }, 'Привітайка від Pryvitai');
     };
 
-    // Fallback функція для поділитися (видаляємо, оскільки не потрібна)
-    const fallbackShare = async () => {
-      try {
-        await navigator.clipboard.writeText(generatedImageUrl);
-        alert('Посилання на зображення скопійовано в буфер обміну!');
-      } catch (error) {
-        console.error('Помилка копіювання:', error);
-        // Показуємо модальне вікно з посиланням
-        const shareText = `Подивіться на цю чудову привітайку: ${generatedImageUrl}`;
-        prompt('Скопіюйте посилання для поділитися:', shareText);
-      }
-    };
+
 
     return (
       <section ref={ref} className="IGS-image-generation-section">

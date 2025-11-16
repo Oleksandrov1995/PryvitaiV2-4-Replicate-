@@ -6,6 +6,8 @@ import { Download, Share } from "yet-another-react-lightbox/plugins";
 import { API_URLS } from "../../config/api";
 import { FiTrash2, FiMoreVertical, FiCalendar, FiShare2, FiDownload, FiRefreshCw, FiEdit3 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { shareImage } from "../../utils/shareUtils";
+import { downloadImageFromUrl } from "../../utils/downloadUtils";
 
 const Gallery = ({ apiEndpoint = API_URLS.GET_GALLERY }) => {
   const navigate = useNavigate();
@@ -76,43 +78,15 @@ const Gallery = ({ apiEndpoint = API_URLS.GET_GALLERY }) => {
 
   const handleShare = async (img) => {
     setActiveMenu(null);
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Згенероване зображення',
-          url: img.url
-        });
-      } catch (err) {
-        console.log('Помилка при діленні:', err);
-      }
-    } else {
-      // Fallback - копіювання посилання
-      navigator.clipboard.writeText(img.url);
-      alert('Посилання скопійовано в буфер обміну!');
-    }
+    await shareImage(img, 'Згенероване зображення');
   };
 
-  const handleDownload = (img) => {
+  const handleDownload = async (img) => {
     setActiveMenu(null);
-    const link = document.createElement('a');
-    link.href = img.url;
-    link.download = `image-${Date.now()}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const filename = `pryvitai-gallery-${Date.now()}.jpg`;
+    await downloadImageFromUrl(img.url, filename);
   };
 
-  const handleRegenerate = (img) => {
-    setActiveMenu(null);
-    // Перехід до сторінки генерації з параметрами поточного зображення
-    navigate('/StylizePhotoForPostcard', { state: { regenerateImage: img } });
-  };
-
-  const handleAddText = (img) => {
-    setActiveMenu(null);
-    // Перехід до редактора з поточним зображенням
-    navigate('/editor', { state: { backgroundImage: img.url } });
-  };
 
   if (loading) return <div className="gallery-message">Завантаження галереї...</div>;
   if (error) return <div className="gallery-message">Помилка: {error}</div>;
