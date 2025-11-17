@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Balance.css';
-import { API_URLS } from '../../config/api';
 import { useNavigate } from 'react-router-dom';
+import { fetchUserData } from '../../utils/fetchUserData';
 
 const Balance = () => {
   const [userData, setUserData] = useState(null);
@@ -10,35 +10,15 @@ const Balance = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUserData();
+    loadUserData();
   }, []);
 
-  const fetchUserData = async () => {
+  const loadUserData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Користувач не авторизований');
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch(API_URLS.GET_ME, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Помилка при отриманні даних користувача');
-      }
-
-      const data = await response.json();
-      setUserData(data.user);
+      const user = await fetchUserData();
+      setUserData(user);
     } catch (err) {
       setError(err.message);
-      console.error('Помилка завантаження даних користувача:', err);
     } finally {
       setLoading(false);
     }
