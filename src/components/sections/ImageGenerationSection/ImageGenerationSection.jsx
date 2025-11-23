@@ -9,6 +9,7 @@ import { downloadImageFromUrl } from "../../../utils/downloadUtils";
 
 import { StylizePhotoForPostcardApiSetting } from "../../../prompts/replicate/StylizePhotoForPostcardPrompt";
 import { createPromptFluxKontextPro } from "../../../prompts/replicate/StylizePhotoForPostcardPrompt";
+import {createCristmasPromt} from "../../../prompts/replicate/StylizePhotoForPostcardPrompt";
 import { API_URLS } from "../../../config/api";
 
 // ДОДАЄМО сюди функцію для збереження в галерею
@@ -51,6 +52,8 @@ const ImageGenerationSection = forwardRef(
       greetingTextRef,
       generateImageData,
       onShowGreeting,
+      hideBackgroundStep = false,
+      useChristmasPrompt = false,
     },
     ref
   ) => {
@@ -158,8 +161,9 @@ const ImageGenerationSection = forwardRef(
         }
 
         // Крок 2: Генерація промпта
+        const promptFunction = useChristmasPrompt ? createCristmasPromt : createPromptFluxKontextPro;
         const generatedImagePrompt = await generateImagePrompt(
-          createPromptFluxKontextPro(formData)
+          promptFunction(formData)
         );
         const generateImageData = StylizePhotoForPostcardApiSetting(
           formData,
@@ -272,12 +276,14 @@ const ImageGenerationSection = forwardRef(
               {formData.photo ? 'Фото додано' : 'Додайте фото однієї людини'}
             </span>
           </div>
-          <div className={`IGS-step ${formData.background ? 'IGS-completed' : ''}`}>
-            <span className="IGS-step-icon">✓</span>
-            <span className="IGS-step-text">
-              {formData.background || 'Оберіть фон або доповнення композиції'}
-            </span>
-          </div>
+          {!hideBackgroundStep && (
+            <div className={`IGS-step ${formData.background ? 'IGS-completed' : ''}`}>
+              <span className="IGS-step-icon">✓</span>
+              <span className="IGS-step-text">
+                {formData.background || 'Оберіть фон або доповнення композиції'}
+              </span>
+            </div>
+          )}
           <div className="IGS-step IGS-special-step">
             <span className="IGS-step-icon">🎨</span>
             <span className="IGS-step-text">Обличчя може трохи змінитись відповідно до стилю</span>

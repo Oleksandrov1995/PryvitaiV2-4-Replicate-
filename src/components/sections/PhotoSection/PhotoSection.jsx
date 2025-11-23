@@ -1,7 +1,15 @@
 import React, { useState, forwardRef, useRef } from "react";
 import "./PhotoSection.css";
 
-const PhotoSection = forwardRef(({ onPhotoChange, scrollToNextSection }, ref) => {
+const PhotoSection = forwardRef(({ 
+  onPhotoChange, 
+  scrollToNextSection, 
+  title = "",
+  description = "",
+  showChristmasDecoration = false,
+  leftTreeSrc,
+  rightTreeSrc
+}, ref) => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
@@ -81,20 +89,43 @@ const PhotoSection = forwardRef(({ onPhotoChange, scrollToNextSection }, ref) =>
   };
 
   return (
-    <section ref={ref} className="photo-section">
-      <h2>Фото для персоналізації</h2>
+    <section ref={ref} className={`photo-section ${showChristmasDecoration ? 'christmas-themed' : ''}`}>
+   
+      <h2>{title}</h2>
       <p className="description">
-        Додайте фото, яке асоціюється з отримувачем привітання, з його захопленнями, діяльністю або стилем. 
-        Це допоможе створити більш персоналізоване зображення.
+        {description}
       </p>
 
       <div className="photo-upload-container">
+        {showChristmasDecoration && (
+          <div className="snowflakes">
+            {Array.from({ length: 15 }, (_, index) => (
+              <div 
+                key={index} 
+                className="snowflake" 
+                style={{
+                  animationDelay: `${Math.random() * 3}s`,
+                  left: `${Math.random() * 100}%`,
+                  animationDuration: `${3 + Math.random() * 3}s`
+                }}
+              >
+                ❄️
+              </div>
+            ))}
+          </div>
+        )}
+        
         <div 
           className={`photo-upload-area ${imagePreview ? 'has-image' : ''}`}
           onClick={handleClick}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-        >
+        >    {showChristmasDecoration && leftTreeSrc && (
+        <img src={leftTreeSrc} alt="Ліва ялинка" className="left-tree-decoration" />
+      )}
+      {showChristmasDecoration && rightTreeSrc && (
+        <img src={rightTreeSrc} alt="Права ялинка" className="right-tree-decoration" />
+      )}
           {imagePreview ? (
             <>
               <img 

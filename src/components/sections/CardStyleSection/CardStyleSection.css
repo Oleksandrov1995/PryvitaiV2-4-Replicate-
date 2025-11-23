@@ -59,18 +59,19 @@
 /* Кнопки показати більше/менше */
 .card-style-button.show-more-button,
 .card-style-button.show-less-button {
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: white;
-  border-color: #007bff;
+  background: white;
+  color: #8E44EE;
+  border-color: #8E44EE;
   font-weight: 500;
   min-width: 140px;
 }
-
 .card-style-button.show-more-button:hover,
 .card-style-button.show-less-button:hover {
-  background: linear-gradient(135deg, #0056b3, #004085);
-  border-color: #0056b3;
+  background: #f5f5f5;
+  border-color: #7b38d2;
+  color: #7b38d2;
   transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .card-style-button .arrow-icon {

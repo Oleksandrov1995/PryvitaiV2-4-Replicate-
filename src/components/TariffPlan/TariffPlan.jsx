@@ -44,7 +44,12 @@ const TariffPlan = () => {
             </div>
 
             <div className="plan-coins">
-              <span className="coin-icon">🪙</span>
+              <svg className="coin-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" fill="#FFD700" stroke="#FFA500" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="7" fill="#FFED4E" stroke="#FFD700" strokeWidth="1"/>
+                <path d="M8 12C8 10.5 9.5 9 12 9C14.5 9 16 10.5 16 12C16 13.5 14.5 15 12 15C9.5 15 8 13.5 8 12Z" fill="#FFD700"/>
+                <text x="12" y="16" textAnchor="middle" fontSize="8" fill="#B8860B" fontWeight="bold"></text>
+              </svg>
               <span className="coin-amount">{plan.coins.toLocaleString()} монет</span>
             </div>
 

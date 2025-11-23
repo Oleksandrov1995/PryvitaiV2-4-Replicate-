@@ -24,6 +24,7 @@ import { AboutUsPage } from './pages/AboutUsPage/AboutUsPage';
 import { CalendarPage } from './pages/CalendarPage/CalendarPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage/PaymentSuccessPage';
 import PaymentErrorPage from './pages/PaymentErrorPage/PaymentErrorPage';
+import { UniversalGreetingPage } from './pages/UniversalGreetingPage/UniversalGreetingPage';
 // import EditorWrapper from './components/Editor/EditorWrapper';
 
 function App() {
@@ -53,6 +54,7 @@ function App() {
     <Route path="/calendar" element={<CalendarPage/>} />
     <Route path="/payment-success" element={<PaymentSuccessPage/>} />
     <Route path="/payment-error" element={<PaymentErrorPage/>} />
+    <Route path="/UniversalGreetingPage" element={<UniversalGreetingPage/>} />
         </Routes>
       </div>
     </Router>

@@ -3,6 +3,9 @@ Design the image in a ${formData.cardStyle} style,
 beautifully redraw person from the photo
 draw the ${formData.background} in the background
 `;
+export const createCristmasPromt=(formData) => `
+Design the image and character in a ${formData.cardStyle} style. He is on a pillow with gifts under it, add a Santa Claus hat to the character, and decorate the top of the image with Christmas tree branches with Christmas toys and snowflakes.
+`;
 
 
 // Список стилів, які треба малювати через Gen4

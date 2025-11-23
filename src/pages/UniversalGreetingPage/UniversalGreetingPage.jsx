@@ -2,7 +2,9 @@ import React, { useRef, useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import "./StylizePhotoForPostcard.css";
+import "./UniversalGreetingPage.css";
+import LeftTree from "../../images/universalPage/LeftTree.png";
+import RightTree from "../../images/universalPage/RightTree.png";
 import {
   PhotoSection,
   CardStyleSection,
@@ -21,7 +23,8 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import SignInModal from "../../components/Registration/SignInModal/SignInModal";
 
-export const StylizePhotoForPostcard = () => {
+
+export const UniversalGreetingPage = () => {
   const [showGreeting, setShowGreeting] = React.useState(false);
   const [generatedImageUrl, setGeneratedImageUrl] = useState("");
   const [generatedPrompt, setGeneratedPrompt] = useState("");
@@ -180,25 +183,28 @@ export const StylizePhotoForPostcard = () => {
           </h1>
        
       </div>
-      <CardStyleSection
+   
+      <PhotoSection
+        ref={photoRef}
+        title="Фото для створення листівки до Святого Миколая"
+        description="Додайте фото з чітким зображенням отримувача привітання або домашнього улюбленця."
+        onPhotoChange={handleFieldChange}
+        scrollToNextSection={createScrollToNextSection(1)}
+        showChristmasDecoration={true}
+        leftTreeSrc={LeftTree}
+        rightTreeSrc={RightTree}
+      />
+         <CardStyleSection
         ref={styleRef}
         onStyleChange={handleFieldChange}
         scrollToNextSection={createScrollToNextSection(0)}
       />
 
-      <PhotoSection
-        ref={photoRef}
-        onPhotoChange={handleFieldChange}
-        scrollToNextSection={createScrollToNextSection(1)}
-         title = "Фото для персоналізації"
-  description = "Додайте фото, яке асоціюється з отримувачем привітання, з його захопленнями, діяльністю або стилем. Це допоможе створити більш персоналізоване зображення."
-      />
-
-      <BackgroundsSection
+      {/* <BackgroundsSection
         ref={backgroundsRef}
         onBackgroundChange={handleFieldChange}
         scrollToNextSection={createScrollToNextSection(2)}
-      />
+      /> */}
       <ImageGenerationSection
         ref={imageGenerationRef}
         onImagePromptChange={handleFieldChange}
@@ -209,6 +215,8 @@ export const StylizePhotoForPostcard = () => {
         scrollToNextSection={createScrollToNextSection(3)}
         onShowGreeting={handleShowGreeting}
         onImageGenerated={handleImageGenerated}
+        hideBackgroundStep={true}
+        useChristmasPrompt={true}
       />
       {showGreeting && (
         <div className="greeting-subject-section">

@@ -39,7 +39,7 @@ const BackgroundsSection = forwardRef(({ onBackgroundChange, scrollToNextSection
 
   return (
     <section ref={ref} className="backgrounds-section">
-      <h2>Фон для листівки</h2>
+      <h2>Фон або доповнення</h2>
       <div className="backgrounds-options">
         {optionsBackgrounds.map((background) => (
           <button
