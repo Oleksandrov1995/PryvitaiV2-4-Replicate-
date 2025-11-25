@@ -80,7 +80,7 @@ export const UniversalGreetingPage = () => {
     setShowGreeting(true);
     // scroll to greeting block after it becomes visible
     setTimeout(() => {
-      const target = sectionRefs[4]?.current; // greetingSubjectRef index in sectionRefs
+      const target = sectionRefs[3]?.current; // greetingSubjectRef index in sectionRefs
       if (target && typeof target.scrollIntoView === "function")
         target.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -104,7 +104,6 @@ export const UniversalGreetingPage = () => {
   // Створюємо refs для кожної секції
   const styleRef = useRef(null);
   const photoRef = useRef(null);
-  const backgroundsRef = useRef(null);
   const imageGenerationRef = useRef(null);
   const greetingSubjectRef = useRef(null);
   const genderAgeRef = useRef(null);
@@ -115,16 +114,15 @@ export const UniversalGreetingPage = () => {
 
   // Масив refs для зручності навігації (в порядку відображення на сторінці)
   const sectionRefs = [
-    styleRef,           // 0 - CardStyleSection
-    photoRef,           // 1 - PhotoSection  
-    backgroundsRef,     // 2 - BackgroundsSection
-    imageGenerationRef, // 3 - ImageGenerationSection
-    greetingSubjectRef, // 4 - GreetingSubjectSection (показується після onShowGreeting)
-    genderAgeRef,       // 5 - GenderAgeSection
-    personRef,          // 6 - PersonSection  
-    hobbiesRef,         // 7 - HobbiesSection
-    traitsRef,          // 8 - TraitsSection
-    greetingTextRef,    // 9 - GreetingTextSection
+    photoRef,           // 0 - PhotoSection
+    styleRef,           // 1 - CardStyleSection
+    imageGenerationRef, // 2 - ImageGenerationSection
+    greetingSubjectRef, // 3 - GreetingSubjectSection (показується після onShowGreeting)
+    genderAgeRef,       // 4 - GenderAgeSection
+    personRef,          // 5 - PersonSection  
+    hobbiesRef,         // 6 - HobbiesSection
+    traitsRef,          // 7 - TraitsSection
+    greetingTextRef,    // 8 - GreetingTextSection
   ];
 
   const { formData, updateField } = useFormData({
@@ -189,7 +187,7 @@ export const UniversalGreetingPage = () => {
         title="Фото для створення листівки до Святого Миколая"
         description="Додайте фото з чітким зображенням отримувача привітання або домашнього улюбленця."
         onPhotoChange={handleFieldChange}
-        scrollToNextSection={createScrollToNextSection(1)}
+        scrollToNextSection={createScrollToNextSection(0)}
         showChristmasDecoration={true}
         leftTreeSrc={LeftTree}
         rightTreeSrc={RightTree}
@@ -197,14 +195,10 @@ export const UniversalGreetingPage = () => {
          <CardStyleSection
         ref={styleRef}
         onStyleChange={handleFieldChange}
-        scrollToNextSection={createScrollToNextSection(0)}
+        scrollToNextSection={createScrollToNextSection(1)}
       />
 
-      {/* <BackgroundsSection
-        ref={backgroundsRef}
-        onBackgroundChange={handleFieldChange}
-        scrollToNextSection={createScrollToNextSection(2)}
-      /> */}
+   
       <ImageGenerationSection
         ref={imageGenerationRef}
         onImagePromptChange={handleFieldChange}
@@ -212,7 +206,7 @@ export const UniversalGreetingPage = () => {
         formData={formData}
         generateImageData={StylizePhotoForPostcardApiSetting(formData)}
         generateImageRef={generateImageRef}
-        scrollToNextSection={createScrollToNextSection(3)}
+        scrollToNextSection={createScrollToNextSection(2)}
         onShowGreeting={handleShowGreeting}
         onImageGenerated={handleImageGenerated}
         hideBackgroundStep={true}
@@ -223,29 +217,29 @@ export const UniversalGreetingPage = () => {
           <GreetingSubjectSection
             ref={greetingSubjectRef}
             onSubjectChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(4)}
+            scrollToNextSection={createScrollToNextSection(3)}
           />
           <GenderAgeSection
             ref={genderAgeRef}
             onGenderChange={handleFieldChange}
             onAgeChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(5)}
+            scrollToNextSection={createScrollToNextSection(4)}
           />
           <PersonSection
             ref={personRef}
             onPersonChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(6)}
+            scrollToNextSection={createScrollToNextSection(5)}
             selectedGender={formData.gender}
           />
           <HobbiesSection
             ref={hobbiesRef}
             onHobbyChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(7)}
+            scrollToNextSection={createScrollToNextSection(6)}
           />
           <TraitsSection
             ref={traitsRef}
             onTraitChange={handleFieldChange}
-            scrollToNextSection={createScrollToNextSection(8)}
+            scrollToNextSection={createScrollToNextSection(7)}
           />
 
           <GreetingTextSection
@@ -254,7 +248,7 @@ export const UniversalGreetingPage = () => {
             formData={formData}
             generatedImageUrl={generatedImageUrl}
             navigate={navigate}
-            scrollToNextSection={createScrollToNextSection(9)}
+            scrollToNextSection={createScrollToNextSection(8)}
           />
         </div>
       )}

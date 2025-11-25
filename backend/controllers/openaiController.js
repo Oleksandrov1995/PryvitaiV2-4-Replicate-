@@ -20,7 +20,7 @@ const generateImagePrompt = async (req, res) => {
       messages: [
         {
           role: "system",
-          content: "Ти - експерт з створення промптів для DALL-E. Твоя задача - перетворити описи користувача у чіткі, художні промпти для генерації зображень. Створюй короткі, конкретні та візуально орієнтовані промпти англійською мовою."
+          content: "Translate prompt to English"
         },
         {
           role: "user",

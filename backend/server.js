@@ -80,26 +80,26 @@ const printServerInfo = () => {
 
 // Функція запуску сервера
 const startServer = () => {
-  const sslKeyPath = '/etc/letsencrypt/live/vps66716.hyperhost.name/privkey.pem';
-  const sslCertPath = '/etc/letsencrypt/live/vps66716.hyperhost.name/fullchain.pem';
+  // const sslKeyPath = '/etc/letsencrypt/live/vps66716.hyperhost.name/privkey.pem';
+  // const sslCertPath = '/etc/letsencrypt/live/vps66716.hyperhost.name/fullchain.pem';
 
-  if (fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath)) {
-    const options = {
-      key: fs.readFileSync(sslKeyPath),
-      cert: fs.readFileSync(sslCertPath),
-    };
-    https.createServer(options, app).listen(PORT,'0.0.0.0', printServerInfo);
-    console.log('🚀 Сервер запущено з HTTPS.');
-  }   
+  // if (fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath)) {
+  //   const options = {
+  //     key: fs.readFileSync(sslKeyPath),
+  //     cert: fs.readFileSync(sslCertPath),
+  //   };
+  //   https.createServer(options, app).listen(PORT,'0.0.0.0', printServerInfo);
+  //   console.log('🚀 Сервер запущено з HTTPS.');
+  // }   
  
-  else {
-    console.error('❌ SSL сертифікати не знайдені. HTTPS сервер не запущено.');
+  // else {
+  //   console.error('❌ SSL сертифікати не знайдені. HTTPS сервер не запущено.');
     
-    process.exit(1);
-  }
-  //   app.listen(PORT, () => {
-  //   console.log(`🚀 Локальний сервер запущено на http://localhost:${PORT}`);
-  // });
+  //   process.exit(1);
+  // }
+    app.listen(PORT, () => {
+    console.log(`🚀 Локальний сервер запущено на http://localhost:${PORT}`);
+  });
 };
 
 // Підключення до MongoDB і запуск сервера
