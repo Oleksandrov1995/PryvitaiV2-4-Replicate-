@@ -51,7 +51,7 @@ const Footer = () => {
             <Link to="/aboutUs">Про нас</Link>
             <Link to="/userTips">Поради користувачам</Link>
             <Link to="/contact">Контакти</Link>
-            <Link to="/userQuestions">Запитання та відповіді</Link>
+            <Link to="/regulation">Правила та умови</Link>
             <Link to="/agreement">Політика конфіденційності</Link>
 
           </div>

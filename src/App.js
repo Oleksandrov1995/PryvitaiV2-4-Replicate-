@@ -15,6 +15,7 @@ import EditorPage from './pages/EditorPage/EditorPage';
 import { ContactUsPage } from './pages/ContactUsPage/ContactUsPage';
 import { UserQuestionsPage } from './pages/UserQuestionsPage/UserQuestionsPage';
 import { AgreementPage } from './pages/AgreementPage/AgreementPage';
+import { RegulationPage } from './pages/RegulationPage/RegulationPage';
 import ScrollToTop from './utils/ScrollToTop';
 import { UserTipsPage } from './pages/UserTipsPage/UserTipsPage';
 import TariffPlanPage from './pages/TariffPlanPage/TariffPlanPage';
@@ -47,6 +48,7 @@ function App() {
     <Route path="/userQuestions" element={<UserQuestionsPage />} />
     <Route path="/userTips" element={<UserTipsPage/>} />
     <Route path="/agreement" element={<AgreementPage/>} />
+    <Route path="/regulation" element={<RegulationPage/>} />
     <Route path="/tariffs" element={<TariffPlanPage/>} />
     <Route path="/actions" element={<ActionsPage/>} />
     <Route path="/balance" element={<BalancePage/>} />
