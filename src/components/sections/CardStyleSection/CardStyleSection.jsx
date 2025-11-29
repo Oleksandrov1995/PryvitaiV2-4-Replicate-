@@ -146,16 +146,7 @@ const CardStyleSection = forwardRef(({ onStyleChange, scrollToNextSection }, ref
           </button>
         )}
       </div>
-      {userTariff !== "Без тарифу" && (
-        <input
-          type="text"
-          placeholder="Ваш креативний варіант - наприклад: в стилі мультика Енеїда"
-          value={customStyle}
-          onChange={(e) => handleCustomStyleChange(e.target.value)}
-          onKeyDown={handleCustomStyleKeyDown}
-          className="custom-style-input"
-        />
-      )}
+      
     </section>
   );
 });
