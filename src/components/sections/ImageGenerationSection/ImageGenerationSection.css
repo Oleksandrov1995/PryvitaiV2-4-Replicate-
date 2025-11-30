@@ -520,9 +520,9 @@
   
   .IGS-final-image-result .IGS-preview-image {
     width: 100%;
-    max-width: 280px;
+    max-width: 420px;
     height: auto;
-    max-height: 280px;
+    max-height: 420px;
   }
 }
 
@@ -559,9 +559,8 @@
   
   .IGS-final-image-result .IGS-preview-image {
     width: 100%;
-    max-width: 230px;
+    max-width: 300px;
     height: auto;
-    max-height: 230px;
   }
   
   .IGS-final-image-result {

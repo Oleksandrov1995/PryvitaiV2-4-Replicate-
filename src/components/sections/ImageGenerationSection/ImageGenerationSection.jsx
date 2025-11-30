@@ -63,27 +63,28 @@ const ImageGenerationSection = forwardRef(
     const [userCoins, setUserCoins] = useState(0); // Додаємо стан для монет користувача
     const navigate = useNavigate();
 
+    // Функція для оновлення балансу монет
+    const updateUserCoins = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const response = await fetch(API_URLS.GET_ME, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setUserCoins(data.user?.coins || 0);
+        }
+      } catch (error) {
+        console.error('Помилка оновлення балансу монет:', error);
+      }
+    };
+
     // Завантажуємо дані користувача при ініціалізації компонента
     useEffect(() => {
-      const fetchUserData = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        try {
-          const response = await fetch(API_URLS.GET_ME, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            setUserCoins(data.user?.coins || 0);
-          }
-        } catch (error) {
-          console.error('Помилка завантаження даних користувача:', error);
-        }
-      };
-
-      fetchUserData();
+      updateUserCoins();
     }, []);
 
     // Функція для переходу до редактора
@@ -198,6 +199,9 @@ const ImageGenerationSection = forwardRef(
         // Оновлюємо баланс монет якщо отримали нове значення
         if (replicateResult.coinsLeft !== undefined && replicateResult.coinsLeft !== null) {
           setUserCoins(replicateResult.coinsLeft);
+        } else {
+          // Якщо сервер не повернув оновлений баланс, запитуємо його вручну
+          await updateUserCoins();
         }
 
         // Крок 4: Завантаження згенерованого зображення на Cloudinary
@@ -232,6 +236,8 @@ const ImageGenerationSection = forwardRef(
         alert(errorMessage || 'Виникла помилка при генерації зображення. Спробуйте ще раз.');
       } finally {
         setIsGenerating(false);
+        // Оновлюємо баланс монет після завершення операції (успішної чи ні)
+        await updateUserCoins();
       }
     }, [formData, onImageGenerated, scrollToNextSection, userCoins]);
 
@@ -308,33 +314,35 @@ const ImageGenerationSection = forwardRef(
             {isGenerating ? (
               <>
                 <span className="IGS-loading-spinner"></span>
-                Генерую зображення
+                Створюю листівку
               </>
+            ) : userCoins < (generatedImageUrl ? 50 : 100) ? (
+              "Обрати тариф"
             ) : generatedImageUrl ? (
-              "🔄 Генерувати повторно"
+              "🔄 Створити повторно"
             ) : (
-              "Згенерувати зображення"
+              "Створити листівку"
             )}
           </button>
           
-          <div className="IGS-coins-info">
-            {/* <span className="IGS-coins-count">У вас: {userCoins} 🪙</span> */}
-            {/* {userCoins < (generatedImageUrl ? 50 : 100) && (
+          {/* <div className="IGS-coins-info">
+            <span className="IGS-coins-count">У вас: {userCoins} 🪙</span>
+            {userCoins < (generatedImageUrl ? 50 : 100) && (
               <span className="IGS-insufficient-coins">
                 Недостатньо монет для генерації (потрібно {generatedImageUrl ? 50 : 100})
               </span>
-            )} */}
-          </div>
+            )}
+          </div> */}
         </div>        {isGenerating && (
           <div className="IGS-generation-time-info">
-            <p>Генерація займає орієнтовно 2-3 хвилини</p>
+            <p>Створення листівки займає орієнтовно 2-3 хвилини</p>
           </div>
         )}
 
         {generatedImageUrl && (
           <div className="IGS-final-image-result">
             <p>
-              <strong>🖼️ Фінальне згенероване зображення:</strong>
+              <strong>🖼️ Фінальне створене зображення:</strong>
             </p>
 
             <div className="IGS-image-preview">
@@ -344,7 +352,7 @@ const ImageGenerationSection = forwardRef(
                 className="IGS-preview-image"
               />
             </div>
-            <p>🌟 Фінальне зображення успішно згенеровано!</p>
+            <p>🌟 Фінальне зображення успішно створено!</p>
 
             <div className="IGS-action-buttons">
               <button onClick={handleDownloadImage} className="IGS-action-button IGS-download-btn">
