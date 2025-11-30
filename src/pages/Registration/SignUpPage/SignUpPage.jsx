@@ -1,10 +1,12 @@
 
 import React from 'react';
 import SignUp from '../../../components/Registration/SignUp/SignUp';
+import './SignUpPage.css';
 const SignUpPage = () => {
 
   return (
-    <div>
+   <div>
+   
       <SignUp/>
     </div>
   );

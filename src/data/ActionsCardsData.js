@@ -14,18 +14,5 @@ export const ActionsCardsData = [
     buttonText: 'Додати події',
     buttonType: 'primary'
   },
-  {
-    id: 2,
-    title: 'Оберіть 5 іменин спільних знайомих та поділіться з людиною для якої ці події також важливі!',
-    image: '/src/images/CatWithCake.jpg',
-    imageAlt: 'Котик з тортом',
-    rewards: [
-      'Бонусне створення листівки безкоштовно'
-    ],
-    additionalText: '',
-    limitText: '',
-    description: 'Допоможіть, благайним пам\'ятати про важливі дати',
-    buttonText: 'Поділитися подіями',
-    buttonType: 'secondary'
-  }
+ 
 ];

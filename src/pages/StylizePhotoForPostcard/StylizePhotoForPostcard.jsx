@@ -20,6 +20,7 @@ import { PersonSection } from "../../components/sections/PersonSection/PersonSec
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import SignInModal from "../../components/Registration/SignInModal/SignInModal";
+import { cardStyleOption } from "../../data/options";
 
 export const StylizePhotoForPostcard = () => {
   const [showGreeting, setShowGreeting] = React.useState(false);
@@ -184,6 +185,7 @@ export const StylizePhotoForPostcard = () => {
         ref={styleRef}
         onStyleChange={handleFieldChange}
         scrollToNextSection={createScrollToNextSection(0)}
+        styleOptions={cardStyleOption}
       />
 
       <PhotoSection

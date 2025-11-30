@@ -1,10 +1,10 @@
 import React, { useState, forwardRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CardStyleSection.css";
-import { cardStyleOptions } from "../../../data/options";
+import { cardStyleOption } from "../../../data/options";
 import { fetchUserData } from "../../../utils/fetchUserData";
 
-const CardStyleSection = forwardRef(({ onStyleChange, scrollToNextSection }, ref) => {
+const CardStyleSection = forwardRef(({ onStyleChange, scrollToNextSection, styleOptions = cardStyleOption }, ref) => {
   const navigate = useNavigate();
   const [selectedStyle, setSelectedStyle] = useState("");
   const [customStyle, setCustomStyle] = useState("");
@@ -26,13 +26,14 @@ const CardStyleSection = forwardRef(({ onStyleChange, scrollToNextSection }, ref
     loadUserTariff();
   }, []);
 
-  const handleOptionSelect = (style) => {
-    setSelectedStyle(style);
+  const handleOptionSelect = (styleObj) => {
+    setSelectedStyle(styleObj.ua);  // Зберігаємо українську назву для UI
     setCustomStyle("");
     
     // Викликаємо callback функцію для передачі даних батьківському компоненту
+    // Передаємо англійське значення для API
     if (onStyleChange) {
-      onStyleChange("cardStyle", style);
+      onStyleChange("cardStyle", styleObj.en);
     }
     
     // Скролимо до наступної секції
@@ -41,24 +42,7 @@ const CardStyleSection = forwardRef(({ onStyleChange, scrollToNextSection }, ref
     }
   };
 
-  const handleCustomStyleChange = (value) => {
-    setCustomStyle(value);
-    setSelectedStyle("");
-    
-    // Викликаємо callback функцію для передачі даних батьківському компоненту
-    if (onStyleChange) {
-      onStyleChange("cardStyle", value);
-    }
-  };
 
-  const handleCustomStyleKeyDown = (e) => {
-    if (e.key === 'Enter' && customStyle.trim().length >= 3) {
-      e.preventDefault();
-      if (scrollToNextSection) {
-        setTimeout(() => scrollToNextSection(), 300);
-      }
-    }
-  };
 
   // Переключення показу всіх стилів
   const toggleShowMore = () => {
@@ -73,15 +57,15 @@ const CardStyleSection = forwardRef(({ onStyleChange, scrollToNextSection }, ref
   // Отримуємо стилі для відображення з урахуванням тарифу
   const getAvailableStyles = () => {
     if (userTariff === "Без тарифу") {
-      return cardStyleOptions.slice(0, 3); // Тільки перші 3 стилі доступні для безкоштовного тарифу
+      return styleOptions.slice(0, 3); // Тільки перші 3 стилі доступні для безкоштовного тарифу
     }
-    return showMore ? cardStyleOptions : cardStyleOptions.slice(0, 5);
+    return showMore ? styleOptions : styleOptions.slice(0, 5);
   };
 
   const getBlockedStyles = () => {
     if (userTariff === "Без тарифу") {
       // Для безкоштовного тарифу показуємо всі інші стилі як заблоковані
-      const remainingStyles = showMore ? cardStyleOptions.slice(3) : cardStyleOptions.slice(3, 5);
+      const remainingStyles = showMore ? styleOptions.slice(3) : styleOptions.slice(3, 5);
       return remainingStyles;
     }
     return []; // Для платних тарифів немає заблокованих стилів
@@ -89,7 +73,7 @@ const CardStyleSection = forwardRef(({ onStyleChange, scrollToNextSection }, ref
 
   const availableStyles = getAvailableStyles();
   const blockedStyles = getBlockedStyles();
-  const hasMoreStyles = cardStyleOptions.length > 5;
+  const hasMoreStyles = styleOptions.length > 5;
 
   
 
@@ -97,27 +81,27 @@ const CardStyleSection = forwardRef(({ onStyleChange, scrollToNextSection }, ref
     <section ref={ref} className="card-style-section">
       <h2>Стиль</h2>
       <div className="card-style-options">
-        {availableStyles.map((style) => (
+        {availableStyles.map((styleObj) => (
           <button
-            key={style}
+            key={styleObj.ua}
             type="button"
-            onClick={() => handleOptionSelect(style)}
-            className={`card-style-button ${selectedStyle === style && customStyle === "" ? "active" : ""}`}
+            onClick={() => handleOptionSelect(styleObj)}
+            className={`card-style-button ${selectedStyle === styleObj.ua && customStyle === "" ? "active" : ""}`}
           >
-            {style}
+            {styleObj.ua}
           </button>
         ))}
         
         {/* Заблоковані стилі для безкоштовного тарифу */}
-        {blockedStyles.map((style) => (
+        {blockedStyles.map((styleObj) => (
           <button
-            key={`blocked-${style}`}
+            key={`blocked-${styleObj.ua}`}
             type="button"
             onClick={handleUpgradeClick}
             className="card-style-button blocked"
             title="Натисніть щоб переглянути тарифи"
           >
-            {style}
+            {styleObj.ua}
             <span className="lock-icon">🔒</span>
           </button>
         ))}

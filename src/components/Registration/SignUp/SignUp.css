@@ -9,11 +9,11 @@ body {
   min-height: 100vh;
   padding: 20px;
   background-color: #9b59b6; /* The purple background from the image */
+
 }
 
 .signup-container {
-  max-width: 420px;
-  width: 100%;
+  width: 420px;
   padding: 40px 30px;
   background: #fff;
   border-radius: 24px;
@@ -73,9 +73,7 @@ body {
   font-size: 20px;
 }
 
-.google-btn {
-    /* Specific styles if needed */
-}
+
 
 .facebook-btn {
     color: #3b5998;
@@ -209,4 +207,224 @@ body {
 .success-message {
     color: #388e3c;
     background-color: #e8f5e9;
+}
+
+/* Password requirements styles */
+.password-requirements {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  text-align: left;
+}
+
+.requirements-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.requirements-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.requirements-list li {
+  font-size: 13px;
+  padding: 2px 0;
+  position: relative;
+  padding-left: 20px;
+}
+
+.requirements-list li::before {
+  content: "✗";
+  position: absolute;
+  left: 0;
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.requirements-list li.valid::before {
+  content: "✓";
+  color: #28a745;
+}
+
+.requirements-list li.invalid {
+  color: #dc3545;
+}
+
+.requirements-list li.valid {
+  color: #28a745;
+}
+
+/* Prevent horizontal scroll */
+* {
+  box-sizing: border-box;
+}
+
+.signup-container,
+.signup-form,
+.input-group,
+.password-wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.signup-form input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .signup-page {
+    padding: 15px;
+    min-height: 100vh;
+  }
+
+  .signup-container {
+    max-width: calc(100% - 30px);
+    width: 100%;
+    padding: 30px 20px;
+    border-radius: 16px;
+    margin: 0 auto;
+  }
+
+  .signup-container h2 {
+    font-size: 24px;
+    margin-bottom: 18px;
+  }
+
+  .signup-form {
+    gap: 14px;
+  }
+
+  .input-group input {
+    padding: 12px 15px;
+    font-size: 16px; /* Prevent zoom on iOS */
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .password-wrapper input {
+    padding-right: 50px;
+  }
+
+  .password-toggle-btn {
+    right: 12px;
+    font-size: 18px;
+  }
+
+  .submit-btn {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .password-requirements {
+    margin-top: 8px;
+    padding: 8px;
+  }
+
+  .requirements-title {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .requirements-list li {
+    font-size: 12px;
+    padding: 1px 0;
+    padding-left: 18px;
+  }
+
+  .divider {
+    margin: 18px 0;
+    font-size: 14px;
+  }
+
+  .login-link {
+    margin-top: 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-page {
+    padding: 10px;
+  }
+
+  .signup-container {
+    max-width: calc(100% - 20px);
+    width: calc(100% - 20px);
+    padding: 25px 16px;
+    border-radius: 12px;
+    margin: 0 auto;
+  }
+
+  .signup-container h2 {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .signup-form {
+    gap: 12px;
+  }
+
+  .input-group {
+    gap: 6px;
+  }
+
+  .input-group label {
+    font-size: 13px;
+  }
+
+  .input-group input {
+    padding: 10px 12px;
+  }
+
+  .password-wrapper input {
+    padding-right: 45px;
+  }
+
+  .password-toggle-btn {
+    right: 10px;
+    font-size: 16px;
+  }
+
+  .submit-btn {
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .password-requirements {
+    padding: 6px;
+  }
+
+  .requirements-title {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .requirements-list li {
+    font-size: 11px;
+    padding-left: 16px;
+  }
+
+  .error-message, .success-message {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .divider {
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  .login-link {
+    margin-top: 18px;
+    font-size: 13px;
+  }
 }

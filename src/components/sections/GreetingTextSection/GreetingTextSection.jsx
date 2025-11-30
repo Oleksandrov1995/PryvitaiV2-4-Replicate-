@@ -237,11 +237,11 @@ const GreetingTextSection = forwardRef(({ onTextChange, scrollToNextSection, for
           className="GTS-generate-button"
           style={{ display: generatedGreetings.length > 0 ? 'none' : 'block' }}
         >
-          {isGenerating ? 'Генерую...' : 'Згенерувати ідеї тексту привітання (10 🪙)'}
+          {isGenerating ? 'Генерую...' : 'Згенерувати ідеї тексту привітання '}
         </button>
         
         <div className="GTS-coins-info" style={{ display: generatedGreetings.length > 0 ? 'none' : 'block' }}>
-          <span className="GTS-coins-count">У вас: {userCoins} 🪙</span>
+          {/* <span className="GTS-coins-count">У вас: {userCoins} 🪙</span> */}
           {userCoins < 10 && (
             <span className="GTS-insufficient-coins">Недостатньо монет для генерації</span>
           )}

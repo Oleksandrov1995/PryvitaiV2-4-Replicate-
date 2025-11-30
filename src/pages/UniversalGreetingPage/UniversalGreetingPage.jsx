@@ -15,6 +15,7 @@ import {
   TraitsSection,
   GreetingTextSection,
 } from "../../components/sections";
+import { cardStyleOptionNewYear } from "../../data/options";
 import { useFormData } from "../../utils/formHandlers";
 import BackgroundsSection from "../../components/sections/BackgroundsSection/BackgroundsSection";
 import { StylizePhotoForPostcardApiSetting } from "../../prompts/replicate/StylizePhotoForPostcardPrompt";
@@ -196,6 +197,7 @@ export const UniversalGreetingPage = () => {
         ref={styleRef}
         onStyleChange={handleFieldChange}
         scrollToNextSection={createScrollToNextSection(1)}
+        styleOptions={cardStyleOptionNewYear}
       />
 
    
@@ -211,6 +213,7 @@ export const UniversalGreetingPage = () => {
         onImageGenerated={handleImageGenerated}
         hideBackgroundStep={true}
         useChristmasPrompt={true}
+        useDirectPrompt={true}
       />
       {showGreeting && (
         <div className="greeting-subject-section">

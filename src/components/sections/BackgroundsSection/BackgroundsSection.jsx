@@ -6,12 +6,12 @@ const BackgroundsSection = forwardRef(({ onBackgroundChange, scrollToNextSection
   const [selectedBackground, setSelectedBackground] = useState("");
   const [customBackground, setCustomBackground] = useState("");
 
-  const handleOptionSelect = (background) => {
-    setSelectedBackground(background);
+  const handleOptionSelect = (backgroundObj) => {
+    setSelectedBackground(backgroundObj.ua);  // Зберігаємо українську назву для UI
     setCustomBackground("");
     
     if (onBackgroundChange) {
-      onBackgroundChange("background", background);
+      onBackgroundChange("background", backgroundObj.en);  // Передаємо англійське значення для API
     }
     
     if (scrollToNextSection) {
@@ -41,14 +41,14 @@ const BackgroundsSection = forwardRef(({ onBackgroundChange, scrollToNextSection
     <section ref={ref} className="backgrounds-section">
       <h2>Фон або доповнення</h2>
       <div className="backgrounds-options">
-        {optionsBackgrounds.map((background) => (
+        {optionsBackgrounds.map((backgroundObj) => (
           <button
-            key={background}
+            key={backgroundObj.ua}
             type="button"
-            onClick={() => handleOptionSelect(background)}
-            className={`backgrounds-button ${selectedBackground === background && customBackground === "" ? "active" : ""}`}
+            onClick={() => handleOptionSelect(backgroundObj)}
+            className={`backgrounds-button ${selectedBackground === backgroundObj.ua && customBackground === "" ? "active" : ""}`}
           >
-            {background}
+            {backgroundObj.ua}
           </button>
         ))}
       </div>

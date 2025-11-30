@@ -1,9 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ActionsCards.css';
 import { ActionsCardsData } from '../../data/ActionsCardsData';
 import CatWithCake from '../../images/CatWithCake.jpg';
 
 const ActionsCards = () => {
+  const navigate = useNavigate();
+
+  const handleButtonClick = (cardId) => {
+    if (cardId === 1) {
+      navigate('/calendar');
+    }
+  };
+
   return (
     <div className="actions-cards-container">
       <div className="actions-header">
@@ -38,7 +47,10 @@ const ActionsCards = () => {
                 <p className="card-description">
                   {card.description}
                 </p>
-                <button className={`action-button ${card.buttonType}`}>
+                <button 
+                  className={`action-button ${card.buttonType}`}
+                  onClick={() => handleButtonClick(card.id)}
+                >
                   {card.buttonText}
                 </button>
               </div>

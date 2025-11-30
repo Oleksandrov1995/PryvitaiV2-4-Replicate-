@@ -1,7 +1,7 @@
 // Конфігурація API
 const API_CONFIG = {
   // Базова URL для API запитів - використовуємо HTTP замість HTTPS
-  BASE_URL:   'http://localhost:5000/api',
+  BASE_URL:   'https://vps66716.hyperhost.name:5000/api',
   
 
   

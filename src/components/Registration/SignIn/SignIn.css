@@ -16,7 +16,7 @@
   opacity: 1;
 }
 .signin-container {
-  max-width: 400px;
+  max-width: 420px ;
   margin: 40px auto;
   padding: 32px;
   background: #fff;
@@ -118,4 +118,95 @@
 
 .login-link button:hover {
     text-decoration: underline;
+}
+
+/* Prevent horizontal scroll */
+* {
+  box-sizing: border-box;
+}
+
+.signin-container,
+.signin-form,
+.input-group,
+.password-wrapper {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.signin-form input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .signin-container {
+    
+    margin: 20px auto;
+    padding: 24px 20px;
+    border-radius: 8px;
+  }
+
+  .signin-form {
+    gap: 14px;
+  }
+
+  .signin-form input {
+    padding: 12px;
+    font-size: 16px; /* Prevent zoom on iOS */
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .signin-form button {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .password-wrapper {
+    position: relative;
+  }
+
+  .password-toggle-btn {
+    right: 12px;
+  }
+
+  .forgot-password-button {
+    font-size: 14px;
+  }
+
+  .error-message, .success-message {
+    font-size: 13px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .signin-container {
+    margin: 10px;
+    padding: 20px 16px;
+  
+  }
+
+  .signin-form {
+    gap: 12px;
+  }
+
+  .signin-form input {
+    padding: 10px;
+  }
+
+  .signin-form button {
+    padding: 10px;
+  }
+
+  .forgot-password-info {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .login-link {
+    font-size: 14px;
+  }
 }

@@ -105,7 +105,7 @@ exports.forgotPassword = async (req, res) => {
   }
   // Генеруємо токен для відновлення пароля (діє 15 хвилин)
   const resetToken = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '15m' });
-  const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+  const resetLink = `https://pryvitai.com/reset-password?token=${resetToken}`;
 
   // Налаштування транспорту (Gmail, Ukr.net, Outlook тощо)
   const transporter = nodemailer.createTransport({

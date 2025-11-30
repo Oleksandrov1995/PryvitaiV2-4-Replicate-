@@ -15,17 +15,51 @@ const SignUp = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState([]);
+
+  const validatePassword = (password) => {
+    const errors = [];
+    
+    if (password.length < 8) {
+      errors.push('Мінімум 8 символів');
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Хоча б одна велика літера');
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push('Хоча б одна мала літера');
+    }
+    if (!/\d/.test(password)) {
+      errors.push('Хоча б одна цифра');
+    }
+    
+    return errors;
+  };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
     setError('');
     setSuccess('');
+    
+    // Валідація пароля в реальному часі
+    if (name === 'password') {
+      const errors = validatePassword(value);
+      setPasswordErrors(errors);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.email || !form.password) {
       setError('Будь ласка, заповніть всі поля.');
+      return;
+    }
+    
+    // Перевірка валідності пароля
+    const passwordValidationErrors = validatePassword(form.password);
+    if (passwordValidationErrors.length > 0) {
+      setError('Пароль не відповідає вимогам безпеки');
       return;
     }
     try {
@@ -157,6 +191,25 @@ const SignUp = () => {
                 {showPassword ? <FiEyeOff /> : <FiEye />}
               </button>
             </div>
+            {form.password && (
+              <div className="password-requirements">
+                <div className="requirements-title">Вимоги до пароля:</div>
+                <ul className="requirements-list">
+                  <li className={form.password.length >= 8 ? 'valid' : 'invalid'}>
+                    Мінімум 8 символів
+                  </li>
+                  <li className={/[A-Z]/.test(form.password) ? 'valid' : 'invalid'}>
+                    Велика літера
+                  </li>
+                  <li className={/[a-z]/.test(form.password) ? 'valid' : 'invalid'}>
+                    Мала літера
+                  </li>
+                  <li className={/\d/.test(form.password) ? 'valid' : 'invalid'}>
+                    Цифра
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
           
           {error && <p className="error-message">{error}</p>}

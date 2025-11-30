@@ -54,6 +54,7 @@ const ImageGenerationSection = forwardRef(
       onShowGreeting,
       hideBackgroundStep = false,
       useChristmasPrompt = false,
+      useDirectPrompt = false,
     },
     ref
   ) => {
@@ -160,21 +161,29 @@ const ImageGenerationSection = forwardRef(
           photoUrl = await uploadPhoto(photoBase64);
         }
 
-        // Крок 2: Генерація промпта
-        const promptFunction = useChristmasPrompt ? createCristmasPromt : createPromptFluxKontextPro;
-        const generatedImagePrompt = await generateImagePrompt(
-          promptFunction(formData)
-        );
+        // Крок 2: Генерація або пряме використання промпта
+        let finalPrompt;
+        if (useDirectPrompt && useChristmasPrompt) {
+          // Пряме використання промпта з createCristmasPromt
+          finalPrompt = createCristmasPromt(formData);
+        } else {
+          // Звичайна генерація промпта
+          const promptFunction = useChristmasPrompt ? createCristmasPromt : createPromptFluxKontextPro;
+          const generatedImagePrompt = await generateImagePrompt(
+            promptFunction(formData)
+          );
+          finalPrompt = generatedImagePrompt.generatedPrompt;
+        }
+        
         const generateImageData = StylizePhotoForPostcardApiSetting(
           formData,
-          generatedImagePrompt.generatedPrompt,
+          finalPrompt,
           photoUrl
         );
 
         console.log("Дані для генерації зображення:", generateImageData);
 
-        if (!generatedImagePrompt)
-          throw new Error("Відсутній згенерований промпт");
+     
 
         // Крок 3: Генерація зображення через Replicate
         const replicateResult = await generateImageReplicate({
@@ -302,19 +311,19 @@ const ImageGenerationSection = forwardRef(
                 Генерую зображення
               </>
             ) : generatedImageUrl ? (
-              "🔄 Генерувати повторно (50 🪙)"
+              "🔄 Генерувати повторно"
             ) : (
               "Згенерувати зображення"
             )}
           </button>
           
           <div className="IGS-coins-info">
-            <span className="IGS-coins-count">У вас: {userCoins} 🪙</span>
-            {userCoins < (generatedImageUrl ? 50 : 100) && (
+            {/* <span className="IGS-coins-count">У вас: {userCoins} 🪙</span> */}
+            {/* {userCoins < (generatedImageUrl ? 50 : 100) && (
               <span className="IGS-insufficient-coins">
                 Недостатньо монет для генерації (потрібно {generatedImageUrl ? 50 : 100})
               </span>
-            )}
+            )} */}
           </div>
         </div>        {isGenerating && (
           <div className="IGS-generation-time-info">

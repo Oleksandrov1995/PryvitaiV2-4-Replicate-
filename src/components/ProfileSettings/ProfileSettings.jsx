@@ -6,7 +6,7 @@ import { API_URLS } from '../../config/api';
 import { uploadPhoto } from '../../config/uploadPhoto';
 
 const ProfileSettings = ({ onClose }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+ 
 
   const [avatar, setAvatar] = useState('');
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
@@ -277,22 +277,7 @@ const ProfileSettings = ({ onClose }) => {
 
   <hr className="ps-divider" />
 
-        <section className="ps-setting-item">
-          <div className="ps-setting-text">
-            <h3>Тема профілю</h3>
-            <p>Світлий / Темний режим</p>
-          </div>
-          <div className="ps-setting-action">
-            <label className="ps-toggle-switch">
-              <input
-                type="checkbox"
-                checked={isDarkMode}
-                onChange={() => setIsDarkMode(!isDarkMode)}
-              />
-              <span className="ps-slider"></span>
-            </label>
-          </div>
-        </section>
+
 
         <hr className="ps-divider" />
 
