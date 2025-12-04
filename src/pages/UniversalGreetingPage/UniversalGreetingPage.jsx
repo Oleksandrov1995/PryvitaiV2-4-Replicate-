@@ -186,7 +186,11 @@ export const UniversalGreetingPage = () => {
       <PhotoSection
         ref={photoRef}
         title="Фото для створення листівки до Святого Миколая"
-        description="Додайте фото з чітким зображенням отримувача привітання або домашнього улюбленця."
+        description={
+          <>
+            Додайте фото <strong>однієї</strong> людини або домашнього улюбленця.
+          </>
+        }
         onPhotoChange={handleFieldChange}
         scrollToNextSection={createScrollToNextSection(0)}
         showChristmasDecoration={true}

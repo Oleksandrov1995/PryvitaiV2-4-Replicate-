@@ -23,21 +23,21 @@ const ContactUs = () => {
           <p>
             {" "}
             <a
-              href="mailto:pryvitai2025@gmail.com"
+              href="mailto:info@pryvitai.com"
               target="_blank"
               rel="noopener noreferrer"
             >
               <FaEnvelope />
-              pryvitai2025@gmail.com
+              info@pryvitai.com
             </a>
           </p>
           <p>
             <a
-              href="tel:+380662428092"
+              href="tel:+380507146471"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaPhone /> +380 66 242 8092
+              <FaPhone /> +380 50 71 464 71
             </a>
           </p>
         </div>

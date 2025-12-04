@@ -316,6 +316,8 @@ const ImageGenerationSection = forwardRef(
                 <span className="IGS-loading-spinner"></span>
                 Створюю листівку
               </>
+            ) : !localStorage.getItem('token') ? (
+              "Створити листівку"
             ) : userCoins < (generatedImageUrl ? 50 : 100) ? (
               "Обрати тариф"
             ) : generatedImageUrl ? (

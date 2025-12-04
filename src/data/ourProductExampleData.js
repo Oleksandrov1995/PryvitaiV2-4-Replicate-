@@ -8,8 +8,7 @@ import example4Orig from "../images/productExample/originalPhoto4.jpg";
 import example4 from "../images/productExample/example4.jpg";
 import example5Orig from "../images/productExample/originalPhoto5.jpg";
 import example5 from "../images/productExample/example5.jpg";
-import example6Orig from "../images/productExample/originalPhoto6.jpg";
-import example6 from "../images/productExample/example6.jpg";
+
 import example7Orig from "../images/productExample/originalPhoto7.jpg";
 import example7 from "../images/productExample/example7.jpg";
 import example8Orig from "../images/productExample/originalPhoto8.jpg";
@@ -85,14 +84,7 @@ export const ourProductExamples = [
     subcategory: "Волейбол",
     description: "Спортивна листівка в стилі вестерн",
   },
-  {
-    id: 6,
-    originalImage: example6Orig,
-    stylizedImage: example6,
-    category: "Комікс",
-    subcategory: "Хмарочоси",
-    description: "Листівка у стилі коміксу з міськими хмарочосами",
-  },
+
   {
     id: 7,
     originalImage: example7Orig,

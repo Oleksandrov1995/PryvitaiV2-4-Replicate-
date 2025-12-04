@@ -46,6 +46,7 @@ export const ageOptions = Array.from({ length: 101 }, (_, i) => ({
 })).filter((opt) => opt.value > 0);
 
 export const optionsGreetingSubject = [
+  "День святого Миколая",
   "День народження",
   "Річниця",
   "День ангела",
