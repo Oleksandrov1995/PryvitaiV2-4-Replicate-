@@ -15,7 +15,7 @@ const SignInModal = ({ isOpen, onClose, onSuccess }) => {
     <div className="signin-modal-overlay" onClick={handleBackdropClick}>
       <div className="signin-modal-wrapper">
         <div className="signin-modal-header">
-          Зареєструйтесь щоб ми могли зберігати для Вас події🎉 та нагадувати про них
+          Зареєструйтесь щоб ми могли зберігати для вас листівки та події
         </div>
         <div className="signin-modal-content">
           <button className="signin-modal-close" onClick={onClose}>

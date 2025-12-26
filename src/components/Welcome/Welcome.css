@@ -123,4 +123,71 @@
     font-size: 0.95rem;
     min-width: 180px;
   }
+  
+  .welcome-manual-link {
+    margin-top: 1.5rem;
+  }
+}
+
+.welcome-manual-link {
+  margin-top: 2rem;
+  opacity: 0.9;
+}
+
+.welcome-manual-link p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.welcome-url-container {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.welcome-url-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  text-align: center;
+  outline: none;
+  cursor: pointer;
+  font-family: monospace;
+  padding: 8px;
+}
+
+.welcome-copy-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+}
+
+.welcome-copy-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.welcome-copy-button:active {
+  transform: scale(0.95);
+}
+
+.welcome-url-input:focus {
+  background: rgba(255, 255, 255, 0.1);
 }

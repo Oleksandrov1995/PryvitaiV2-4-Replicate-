@@ -70,23 +70,7 @@ const PhotoSection = forwardRef(({
     fileInputRef.current?.click();
   };
 
-  const handleRemove = () => {
-    setUploadedImage(null);
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    
-    if (onPhotoChange) {
-      onPhotoChange("photo", null);
-    }
-  };
 
-  const handleSkip = () => {
-    if (scrollToNextSection) {
-      scrollToNextSection();
-    }
-  };
 
   return (
     <section ref={ref} className={`photo-section ${showChristmasDecoration ? 'christmas-themed' : ''}`}>
@@ -159,29 +143,18 @@ const PhotoSection = forwardRef(({
         </div>
 
         <div className="photo-actions">
-          {uploadedImage ? (
-            <>
-              <button 
-                onClick={handleClick}
-                className="action-button"
-              >
-                Змінити фото
-              </button>
-              <button 
-                onClick={handleRemove}
-                className="action-button secondary"
-              >
-                Видалити
-              </button>
-            </>
-          ) : (
-            <button 
-              onClick={handleSkip}
-              className="action-button secondary"
-            >
-              Пропустити
-            </button>
-          )}
+        {uploadedImage && (
+  <div className="image-actions">
+    <button 
+      type="button"
+      onClick={handleClick}
+      className="action-button"
+    >
+      Змінити фото
+    </button>
+
+  </div>
+)}
         </div>
 
         <div className="photo-tips">
